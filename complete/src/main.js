@@ -8,7 +8,7 @@ import service from '../src/service/index'
 Vue.config.productionTip = false
 
 Vue.prototype.$http = service
-Vue.prototype.url = 'http://localhost:3333/'
+Vue.prototype.url = 'http://localhost:3333'
 
 /* eslint-disable no-new */
 new Vue({

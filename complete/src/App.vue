@@ -9,7 +9,7 @@
 export default {
   name: 'App',
   created () {
-    this.$http.get(this.url).then((res) => {
+    this.$http.get(this.url + '/first').then((res) => {
       console.log(res)
     })
   }
