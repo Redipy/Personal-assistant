@@ -4,11 +4,11 @@ import qs from 'qs'
 let service = axios.create({
   timeout: 20000, // 请求超时时间
   crossDomain: true, // 设置cross跨域
-  withCredentials: false// 设置cross跨域 并设置访问权限 不允许跨域携带cookie信息
+  withCredentials: false, // 设置cross跨域 并设置访问权限 不允许跨域携带cookie信息
+  headers: { 'Content-Type': 'multipart/form-data', 'Access-Control-Allow-Origin': 'http://localhost:3333' }
 })
 
-// 设置 post 默认 Content-Type
-service.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8'
+// service.defaults.headers['Access-Control-Allow-Origin'] = '*'
 
 // 添加请求拦截器
 service.interceptors.request.use(

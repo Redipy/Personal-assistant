@@ -8,7 +8,7 @@ import service from '../src/service/index'
 Vue.config.productionTip = false
 
 Vue.prototype.$http = service
-Vue.prototype.url = 'https://cnodejs.org/api/v1/topics?page=1&limit=15'
+Vue.prototype.url = 'http://localhost:3333/'
 
 /* eslint-disable no-new */
 new Vue({
