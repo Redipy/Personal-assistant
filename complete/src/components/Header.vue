@@ -5,18 +5,19 @@
     </div>
     <div class="headright">
       <div class="info">
-        <el-tooltip placement="bottom">
+        <el-tooltip placement="left">
           <span slot="content">{{message ? `有${message}条消息` : '消息中心'}}</span>
           <i class="el-icon-message-solid"></i>
         </el-tooltip>
       </div>
-      <el-dropdown @command="handleCommand">
+      <el-dropdown :command="handleCommand"
+                   trigger="click">
         <span class="el-dropdown-link">
           {{username}}
           <i class="el-icon-caret-bottom"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <a href="https://github.com/nut77/vue2-elementui-admin"
+          <a href="https://github.com/Redipy/Complete/tree/master/complete"
              target="_blank">
             <el-dropdown-item>项目仓库</el-dropdown-item>
           </a>
@@ -83,7 +84,7 @@ export default {
 .headleft {
   width: 20%;
   font-size: 25px;
-  line-height: 53px;
+  line-height: 58px;
 }
 
 .headright {
@@ -93,6 +94,18 @@ export default {
 }
 
 .headright .info {
-  margin: 2%;
+  margin-right: 10%;
+  margin-top: 2%;
+  cursor: pointer;
+}
+
+.el-dropdown {
+  margin-right: 5%;
+  margin-top: 1%;
+  color: antiquewhite;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
 }
 </style>
