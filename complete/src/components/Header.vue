@@ -17,7 +17,7 @@
           <i class="el-icon-caret-bottom"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <a href="https://github.com/Redipy/Complete/tree/master/complete"
+          <a href="https://github.com/Redipy/Complete"
              target="_blank">
             <el-dropdown-item>项目仓库</el-dropdown-item>
           </a>
