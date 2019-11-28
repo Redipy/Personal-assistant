@@ -1,25 +1,26 @@
 <template>
-  <el-container class="container">
-    <com-header></com-header>
-    <!-- <com-sidebar></com-sidebar>
-    <div :style="{left: collapse ? '64px' : '200px'}">
-      <com-tags></com-tags>
+  <div class="container">
+    <Header></Header>
+    <Sidebar></Sidebar>
+    <div class="main"
+         :style="{left: collapse ? '64px' : '200px'}">
+      <Tags></Tags>
       <keep-alive :include="tagComponent">
-        <router-view></router-view>
+        <router-view class="main-cont"></router-view>
       </keep-alive>
     </div>
-    <el-footer></el-footer> -->
-  </el-container>
+    <el-footer></el-footer>
+  </div>
 </template>
 
 <script>
-import comHeader from './Header.vue'
-import comSidebar from './Sidebar.vue'
-import comTags from './Tags.vue'
+import Header from './Header.vue'
+import Sidebar from './Sidebar.vue'
+import Tags from './Tags.vue'
 import Bus from './bus'
 export default {
   name: 'Base',
-  components: { comHeader, comSidebar, comTags },
+  components: { Header, Sidebar, Tags },
   data () {
     return {
       collapse: false,
@@ -40,3 +41,17 @@ export default {
   }
 }
 </script>
+<style type="text/css">
+.main {
+  position: absolute;
+  top: 60px;
+  bottom: 0;
+  left: 200px;
+  right: 0;
+  overflow: auto;
+}
+
+.main-cont {
+  margin-top: 40px;
+}
+</style>

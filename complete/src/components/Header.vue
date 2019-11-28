@@ -1,6 +1,11 @@
 <template>
-  <el-header class="header">
+  <el-header>
     <div class="headleft">
+      <span class="btn-collapse"
+            @click="collapseChage"
+            :title="collapse ? '展开侧边栏' : '收起侧边栏'">
+        <i class="el-icon-menu"></i>
+      </span>
       <span>个人任务管理系统</span>
     </div>
     <div class="headright">
@@ -10,7 +15,8 @@
           <i class="el-icon-message-solid"></i>
         </el-tooltip>
       </div>
-      <el-dropdown :command="handleCommand"
+      <el-dropdown class="headerDropdown"
+                   :command="handleCommand"
                    trigger="click">
         <span class="el-dropdown-link">
           {{username}}
@@ -61,7 +67,7 @@ export default {
   }
 }
 </script>
-<style type="text/css" >
+<style type="text/css">
 .el-tooltip {
   font-size: 25px;
 }
@@ -99,7 +105,7 @@ export default {
   cursor: pointer;
 }
 
-.el-dropdown {
+.headerDropdown {
   margin-right: 5%;
   margin-top: 1%;
   color: antiquewhite;
