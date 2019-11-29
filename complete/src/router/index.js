@@ -16,13 +16,31 @@ export default new Router({
     },
     children: [{
       path: '/index',
+      name: 'index',
       component: () => import('../page/Home.vue'),
       meta: {
         title: '系统首页'
       }
     },
     {
+      path: '/date',
+      name: 'date',
+      component: () => import('../page/date.vue'),
+      meta: {
+        title: '日历'
+      }
+    },
+    {
+      path: '/task',
+      name: 'task',
+      component: () => import('../page/task.vue'),
+      meta: {
+        title: '我的任务'
+      }
+    },
+    {
       path: '/message',
+      name: 'message',
       component: () => import('../page/message.vue'),
       meta: {
         title: '我的信息'
@@ -30,6 +48,7 @@ export default new Router({
     },
     {
       path: '/group',
+      name: 'group',
       component: () => import('../page/group.vue'),
       meta: {
         title: '群组管理'
@@ -37,6 +56,7 @@ export default new Router({
     },
     {
       path: '/info',
+      name: 'info',
       component: () => import('../page/info.vue'),
       meta: {
         title: '个人信息管理'
@@ -46,6 +66,7 @@ export default new Router({
   },
   {
     path: '/login',
+    name: 'login',
     component: () => import('../page/Login.vue')
   }
     // {

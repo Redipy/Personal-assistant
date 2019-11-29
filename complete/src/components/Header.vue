@@ -6,7 +6,7 @@
             :title="collapse ? '展开侧边栏' : '收起侧边栏'">
         <i class="el-icon-menu"></i>
       </span>
-      <span>个人任务管理系统</span>
+      <span>个人助理工具</span>
     </div>
     <div class="headright">
       <div class="info">

@@ -130,8 +130,8 @@ export default {
 }
 
 .tag-item.active {
-  border-color: #153834;
-  background-color: #153834;
+  border-color: #409eff;
+  background-color: #409eff;
   color: white !important;
 }
 

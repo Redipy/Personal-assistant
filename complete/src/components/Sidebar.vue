@@ -47,6 +47,16 @@ export default {
           icon: 'el-icon-house'
         },
         {
+          title: '日历',
+          path: '/date',
+          icon: 'el-icon-date'
+        },
+        {
+          title: '我的任务',
+          path: '/task',
+          icon: 'el-icon-notebook-2'
+        },
+        {
           title: '我的信息',
           path: '/message',
           icon: 'el-icon-message'

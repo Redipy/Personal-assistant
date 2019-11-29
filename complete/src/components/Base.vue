@@ -6,7 +6,7 @@
          :style="{left: collapse ? '64px' : '200px'}">
       <Tags></Tags>
       <keep-alive :include="tagComponent">
-        <router-view class="main-cont"></router-view>
+        <router-view></router-view>
       </keep-alive>
     </div>
     <el-footer></el-footer>
@@ -49,9 +49,5 @@ export default {
   left: 200px;
   right: 0;
   overflow: auto;
-}
-
-.main-cont {
-  margin-top: 40px;
 }
 </style>
