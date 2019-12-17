@@ -57,9 +57,6 @@ export default {
   data () {
     return {
       pickerOptions: {
-        disabledDate (time) {
-          return time.getTime() > Date.now()
-        },
         shortcuts: [{
           text: '今天',
           onClick (picker) {
@@ -81,7 +78,6 @@ export default {
           }
         }]
       },
-      date: '',
       search: '',
       tableData: []
     }
@@ -89,14 +85,27 @@ export default {
   methods: {
     init () {
       if (this.$route.params.date) {
-        this.date = this.$route.params.date
+        this.search = this.$route.params.date
       } else {
-        this.date = this.dateToString(new Date())
+        this.search = new Date()
       }
-      console.log(this.date)
       this.loadTable()
     },
     loadTable () {
+      this.$http.get(this.url)
+        .then(function (res) {
+          console.log(res)
+        })
+        .catch(res => {
+          console.log(res)
+        })
+      this.$http.get(this.url + '/first')
+        .then(function (res) {
+          console.log(res)
+        })
+        .catch(res => {
+          console.log(res)
+        })
       this.tableData = [
         {
           Stime: '12:00',

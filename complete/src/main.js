@@ -9,15 +9,20 @@ import service from '../src/service/index'
 
 Vue.config.productionTip = false
 
-Vue.use(ElementUI, {size: 'medium'})
+Vue.use(ElementUI, {
+  size: 'medium'
+})
 
 Vue.prototype.$http = service
-Vue.prototype.url = 'http://localhost:3333'
+// Vue.prototype.url = 'http://localhost:3333'
+Vue.prototype.url = 'http://redipy.uicp.io'
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
-  components: { App },
+  components: {
+    App
+  },
   template: '<App/>'
 })

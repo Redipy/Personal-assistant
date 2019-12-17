@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 Vue.use(Router)
 
-export default new Router({
+const router = new Router({
   routes: [{
     path: '/',
     redirect: '/index'
@@ -79,3 +79,19 @@ export default new Router({
     // }
   ]
 })
+
+// router.beforeEach((to, from, next) => {
+//   if (to.name !== 'login') {
+//     if (localStorage.getItem('username')) {
+//       next()
+//     } else {
+//       next({
+//         path: '/login'
+//       })
+//     }
+//   } else {
+//     next()
+//   }
+// })
+
+export default router
