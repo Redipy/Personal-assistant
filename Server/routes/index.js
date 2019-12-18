@@ -10,7 +10,7 @@ router.get('/', function (req, res, next) {
 });
 
 router.get('/first', (req, res, next) => {
-  let sql = "select * from admin"
+  let sql = "select * from user"
   db.query(sql, (err, rows) => {
     if (err) {
       res.json({
