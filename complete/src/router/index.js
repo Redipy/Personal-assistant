@@ -80,18 +80,18 @@ const router = new Router({
   ]
 })
 
-// router.beforeEach((to, from, next) => {
-//   if (to.name !== 'login') {
-//     if (localStorage.getItem('username')) {
-//       next()
-//     } else {
-//       next({
-//         path: '/login'
-//       })
-//     }
-//   } else {
-//     next()
-//   }
-// })
+router.beforeEach((to, from, next) => {
+  if (to.name !== 'login') {
+    if (sessionStorage.getItem('EX_token')) {
+      next()
+    } else {
+      next({
+        path: '/login'
+      })
+    }
+  } else {
+    next()
+  }
+})
 
 export default router

@@ -1,9 +1,63 @@
 var express = require('express');
 var router = express.Router();
 
-/* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+let db = require("../service/db")
+
+router.post('/login', function (req, res, next) {
+  let sql = "select * from user where user_name = '" + req.body.user_name + "' and user_password = '" + req.body.password + "'"
+  db.query(sql, (err, rows) => {
+    if (err) {
+      res.json({
+        err: "chucuole"
+      })
+    } else {
+      if (rows.length != 0) {
+        res.json({
+          status: 200,
+          data: 1
+        })
+      } else {
+        res.json({
+          status: 200,
+          data: 0
+        })
+      }
+    }
+  })
+});
+
+router.post('/reg', function (req, res, next) {
+  let first = "select * from user where user_name = '" + req.body.user_name + "'"
+  let sql = "insert into user(user_name,user_password) values('" + req.body.user_name + "','" + req.body.password + "')"
+  console.log(first)
+  console.log(sql)
+  db.query(first, (err, rows) => {
+    if (err) {
+      res.json({
+        err: "chucuole"
+      })
+    } else {
+      if (rows.length != 0) {
+        res.json({
+          status: 200,
+          data: 0
+        })
+      } else {
+        db.query(sql, (err, rows) => {
+          if (err) {
+            res.json({
+              err: "chucuole"
+            })
+          } else {
+            res.json({
+              status: 200,
+              data: 1
+            })
+          }
+        })
+      }
+    }
+  })
 });
 
 module.exports = router;
