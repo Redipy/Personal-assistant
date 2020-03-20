@@ -12,44 +12,145 @@
                  @click="searchTask"
                  type="primary"
                  round>搜索</el-button>
+      <el-button class="newButton"
+                 @click="addTask"
+                 type="primary"
+                 round>新增任务</el-button>
     </div>
     <div class="tableBody">
       <el-table :data="tableData"
                 stripe
                 style="width: 100%">
-        <el-table-column prop="Stime"
-                         label="开始时间"
-                         width="">
-        </el-table-column>
-        <el-table-column prop="Etime"
-                         label="结束时间"
-                         width="">
-        </el-table-column>
-        <el-table-column prop="name"
+        <el-table-column prop="task_name"
                          label="任务"
                          width="">
         </el-table-column>
-        <el-table-column prop="progress"
+        <el-table-column prop="task_detail"
+                         label="任务描述"
+                         width="">
+        </el-table-column>
+        <!-- <el-table-column prop="task_progress"
                          label="完成度"
                          width="">
           <template slot-scope="scope">
             <el-progress :percentage='scope.row.progress'></el-progress>
           </template>
+        </el-table-column> -->
+        <el-table-column prop="date"
+                         label="执行日期"
+                         width="">
+        </el-table-column>
+        <el-table-column prop="task_type"
+                         label="任务类型"
+                         width="">
         </el-table-column>
         <el-table-column fixed="right"
                          label="操作"
                          width="100">
           <template slot-scope="scope">
-            <el-button @click="showDetail(scope)"
-                       type="text"
-                       size="small">查看</el-button>
             <el-button @click="editDetail(scope)"
                        type="text"
                        size="small">编辑</el-button>
+            <el-button @click="over(scope)"
+                       type="text"
+                       size="small">完成</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination small
+                     layout="prev, pager, next"
+                     :current-page="currentPage"
+                     @current-change='this.currentChange'
+                     :total='this.length'>
+      </el-pagination>
     </div>
+    <el-dialog title="编辑"
+               :visible.sync="dialogVisible"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="30%">
+      <el-form :model="ruleForm"
+               ref="ruleForm"
+               label-width="100px"
+               class="demo-ruleForm">
+        <el-form-item label="任务名称"
+                      prop="name">
+          <el-input v-model="ruleForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="任务描述"
+                      prop="detail">
+          <el-input v-model="ruleForm.detail"></el-input>
+        </el-form-item>
+        <el-form-item label="任务类型"
+                      prop="detail">
+          <el-switch v-model="ruleForm.type"
+                     active-text="期限任务"
+                     inactive-text="日常任务">
+          </el-switch>
+        </el-form-item>
+        <template v-if="ruleForm.type">
+          <el-form-item label="执行日期"
+                        prop="date">
+            <el-date-picker v-model="ruleForm.date"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+        </template>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="no()">取 消</el-button>
+        <el-button type="primary"
+                   @click="sure()">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog title="新增"
+               @close="closeadd()"
+               :visible.sync="adddialogVisible"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="30%">
+      <el-form :model="addForm"
+               ref="addForm"
+               label-width="100px"
+               class="demo-ruleForm">
+        <el-form-item label="任务名称"
+                      prop="name">
+          <el-input v-model="addForm.name"></el-input>
+        </el-form-item>
+        <el-form-item label="任务描述"
+                      prop="detail">
+          <el-input v-model="addForm.detail"></el-input>
+        </el-form-item>
+        <el-form-item label="任务类型"
+                      prop="detail">
+          <el-switch v-model="addForm.type"
+                     active-text="期限任务"
+                     inactive-text="日常任务">
+          </el-switch>
+        </el-form-item>
+        <template v-if="addForm.type">
+          <el-form-item label="执行日期"
+                        prop="date">
+            <el-date-picker v-model="addForm.date"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+        </template>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="noAdd()">取 消</el-button>
+        <el-button type="primary"
+                   @click="sureAdd()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -78,8 +179,25 @@ export default {
           }
         }]
       },
+      dialogVisible: false,
+      adddialogVisible: false,
+      currentPage: 1,
+      length: 0,
+      user_id: null,
       search: '',
-      tableData: []
+      tableData: [],
+      ruleForm: {
+        name: '',
+        detail: '',
+        type: false,
+        date: ''
+      },
+      addForm: {
+        name: '',
+        detail: '',
+        type: false,
+        date: ''
+      }
     }
   },
   methods: {
@@ -92,28 +210,41 @@ export default {
       this.loadTable()
     },
     loadTable () {
-      this.$http.get(this.url)
+      let self = this
+      this.user_id = JSON.parse(localStorage.getItem('EX_token')).user_id
+      this.$http.post(this.url + '/task/findList', {
+        user_id: this.user_id,
+        date: this.dateToString(this.search),
+        pageno: this.currentPage,
+        pagesize: 10
+      })
         .then(function (res) {
           console.log(res)
+          self.length = res.length['count(*)']
+          self.tableData = res.data
+          for (let i = 0; i < self.tableData.length; i++) {
+            if (self.tableData[i].task_type === 0) {
+              self.tableData[i].task_type = '个人任务'
+            } else if (self.tableData[i].task_type === 1) {
+              self.tableData[i].task_type = '群组任务'
+            }
+            if (self.tableData[i].task_startdate) {
+              console.log(self.dateToString(new Date(self.tableData[i].task_startdate)))
+              let date = self.dateToString(new Date(self.tableData[i].task_startdate)) + ' 至 ' + self.dateToString(new Date(self.tableData[i].task_enddate))
+              self.$set(self.tableData[i], 'date', date)
+            } else {
+              self.$set(self.tableData[i], 'date', '日常任务')
+            }
+          }
         })
         .catch(res => {
           console.log(res)
         })
-      this.$http.get(this.url + '/first')
-        .then(function (res) {
-          console.log(res)
-        })
-        .catch(res => {
-          console.log(res)
-        })
-      this.tableData = [
-        {
-          Stime: '12:00',
-          Etime: '17:30',
-          name: '写项目',
-          progress: 60
-        }
-      ]
+    },
+    currentChange (currentPage) {
+      this.currentPage = currentPage
+      console.log(this.currentPage)
+      this.loadTable()
     },
     searchTask () {
       let data = ''
@@ -122,11 +253,136 @@ export default {
         console.log(data)
       }
     },
-    showDetail (data) {
-      console.log(data.row)
+    addTask () {
+      this.adddialogVisible = true
     },
     editDetail (data) {
       console.log(data.row)
+      this.ruleForm.id = data.row.task_id
+      this.ruleForm.name = data.row.task_name
+      this.ruleForm.detail = data.row.task_detail
+      if (data.row.date !== '日常任务') {
+        this.ruleForm.type = true
+        this.ruleForm.date = [new Date(data.row.date.split(' 至 ')[0]), new Date(data.row.date.split(' 至 ')[1])]
+      } else {
+        this.ruleForm.type = false
+        this.ruleForm.date = data.row.date
+      }
+      console.log(this.ruleForm)
+      this.dialogVisible = true
+    },
+    no () {
+      this.$confirm('是否取消修改？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.dialogVisible = false
+      }).catch(() => { })
+    },
+    noAdd () {
+      this.$confirm('是否取消新增？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.adddialogVisible = false
+      }).catch(() => { })
+    },
+    sure () {
+      let self = this
+      this.$confirm('是否修改？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        // console.log(this.ruleForm.date)
+        let date = ''
+        if (!this.ruleForm.type) {
+          date = ''
+        } else {
+          let start = this.dateToString(this.ruleForm.date[0])
+          let end = this.dateToString(this.ruleForm.date[1])
+          // console.log(start)
+          // console.log(end)
+          date = start + ' 至 ' + end
+        }
+        this.$http.post(this.url + '/task/update', {
+          task_id: this.ruleForm.id,
+          task_name: this.ruleForm.name,
+          task_detail: this.ruleForm.detail,
+          task_date: date
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          self.loadTable()
+        })
+        this.dialogVisible = false
+      }).catch(() => { })
+    },
+    sureAdd () {
+      let self = this
+      this.user_id = JSON.parse(localStorage.getItem('EX_token')).user_id
+      this.$confirm('是否新增？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let date = ''
+        if (!this.addForm.type) {
+          date = ''
+        } else {
+          let start = this.dateToString(this.addForm.date[0])
+          let end = this.dateToString(this.addForm.date[1])
+          // console.log(start)
+          // console.log(end)
+          date = start + ' 至 ' + end
+        }
+        this.$http.post(this.url + '/task/addTask', {
+          task_name: this.addForm.name,
+          task_detail: this.addForm.detail,
+          task_userid: this.user_id,
+          task_date: date
+        }).then(() => {
+          this.$message({
+            type: 'success',
+            message: '新增成功'
+          })
+          self.loadTable()
+        })
+        this.adddialogVisible = false
+      }).catch(() => { })
+    },
+    closeadd () {
+      this.addForm = {
+        name: '',
+        detail: '',
+        type: false,
+        date: ''
+      }
+    },
+    over (data) {
+      let self = this
+      // console.log(data.row)
+      this.$confirm('是否结束此任务？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        console.log(data.row.task_id)
+        this.$http.post(this.url + '/task/overTask', {
+          task_id: data.row.task_id
+        })
+          .then((res) => {
+            this.$message({
+              type: 'success',
+              message: res.message
+            })
+            self.loadTable()
+          }).catch(() => { })
+      }).catch(() => { })
     },
     dateToString (date) {
       let year = date.getFullYear()
@@ -167,6 +423,11 @@ export default {
 
 .searchButton {
   margin-left: 1%;
+}
+
+.newButton {
+  /* float: right; */
+  margin-left: 80%;
 }
 
 .tableBody {

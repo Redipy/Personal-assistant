@@ -145,10 +145,15 @@ export default {
             })
               .then(function (res) {
                 // console.log(res)
-                if (res.data === 0) {
+                if (res.data === 1) {
                   self.$message.error('用户名或密码错误')
-                } else if (res.data === 1) {
-                  sessionStorage.setItem('EX_token', self.ruleForm.username)
+                } else if (res.data === 0) {
+                  let user = {
+                    user_id: res.info.user_id,
+                    user_name: res.info.user_name
+                  }
+                  localStorage.setItem('EX_token', JSON.stringify(user))
+                  console.log(localStorage.getItem('EX_token'))
                   self.$router.push('/')
                 }
                 self.loading = false

@@ -103,7 +103,7 @@ export default {
 <style type="text/css">
 .main-tags {
   z-index: 2;
-  width: 100%;
+  width: 98%;
   padding: 8px 5px;
   box-shadow: 1px 0 2px #ccc;
   display: flex;

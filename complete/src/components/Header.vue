@@ -61,8 +61,8 @@ export default {
     }
   },
   mounted () {
-    if (localStorage.getItem('username')) {
-      this.username = localStorage.getItem('username')
+    if (localStorage.getItem('EX_token')) {
+      this.username = JSON.parse(localStorage.getItem('EX_token')).user_name
     }
   }
 }

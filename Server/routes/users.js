@@ -14,12 +14,15 @@ router.post('/login', function (req, res, next) {
       if (rows.length != 0) {
         res.json({
           status: 200,
-          data: 1
+          data: 0,
+          info: rows[0],
+          message: '登录成功'
         })
       } else {
         res.json({
           status: 200,
-          data: 0
+          data: 1,
+          message: '用户名或密码错误'
         })
       }
     }
