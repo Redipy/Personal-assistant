@@ -132,4 +132,20 @@ router.post('/addTask', function (req, res, next) {
   })
 });
 
+router.post('/findByid', function (req, res, next) {
+  let sql = "select * from task where task_id = '" + req.body.task_id + "'"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: "chucuole"
+      })
+    } else {
+      res.json({
+        status: 200,
+        data: data
+      })
+    }
+  })
+})
+
 module.exports = router;

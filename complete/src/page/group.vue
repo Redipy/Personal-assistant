@@ -1,5 +1,396 @@
 <template>
-  <div>
-    group
+  <div class="groupBody">
+    <div class="searchBar">
+      <el-input class="searchInput"
+                v-model="search"></el-input>
+      <el-button class="searchButton"
+                 @click="searchGroup"
+                 type="primary"
+                 round>搜索</el-button>
+    </div>
+    <div class="groupItems">
+      <el-row v-for="(group, groupid) in usergroup"
+              :key="groupid"
+              :gutter="20"
+              class="group-list">
+        <el-col v-for="(item, index) in group"
+                :key="index"
+                :span="5"
+                class="group-img">
+          <el-card :body-style="{ padding: '0px'}">
+            <img src="../../static/img/qunzu.jpg"
+                 class="image">
+            <div style="padding: 14px;">
+              <span>{{item.group_name}}</span>
+              <span>群主:{{item.group_leaderName}}</span>
+              <div class="bottom clearfix">
+                <el-button type="text"
+                           class="button"
+                           @click="watchgrouptask(item.group_id)">查看团队任务</el-button>
+                <el-button type="text"
+                           class="button"
+                           @click="watchgoupmenber(item.group_id)">查看团队成员</el-button>
+                <template v-if="item.isleader">
+                  <el-button type="text"
+                             class="button"
+                             @click="delegroup(item)">解散团队</el-button>
+                </template>
+                <template v-else>
+                  <el-button type="text"
+                             class="button"
+                             @click="quitgroup(item)">退出团队</el-button>
+                </template>
+                <!-- <el-button type="text"
+                           class="button">退出团队</el-button> -->
+              </div>
+            </div>
+          </el-card>
+        </el-col>
+      </el-row>
+    </div>
+    <el-dialog title="群组任务"
+               :visible.sync="groupTaskVisible"
+               @close="closetask()"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <el-table :data="grouptask">
+        <el-table-column property="task_name"
+                         label="任务名称"></el-table-column>
+        <el-table-column property="task_detail"
+                         label="任务描述"></el-table-column>
+        <!-- <el-table-column property="date"
+                         label="任务期限"></el-table-column> -->
+      </el-table>
+    </el-dialog>
+
+    <el-dialog title="群员列表"
+               :visible.sync="groupMenberVisible"
+               @close="closemenber()"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <template v-if="isleader">
+        <el-popover v-for="(item,index) in menberlist"
+                    :key="index"
+                    class="group-menberlist"
+                    placement="top"
+                    width="160">
+          <p>更改群员状态</p>
+          <div style="text-align: right; margin: 0">
+            <el-button size="primary"
+                       type="text"
+                       @click="levelup(item)">升级</el-button>
+            <el-button type="primary"
+                       size="mini"
+                       @click="goout(item)">踢出群</el-button>
+          </div>
+          <el-button slot="reference">{{item.name}}</el-button>
+        </el-popover>
+      </template>
+      <template v-else>
+        <el-popover v-for="(item,index) in menberlist"
+                    :key="index"
+                    class="group-menberlist"
+                    placement="top"
+                    width="160">
+          <p>群成员</p>
+          <el-button slot="reference">{{item.name}}</el-button>
+        </el-popover>
+      </template>
+    </el-dialog>
   </div>
 </template>
+
+<script>
+export default {
+  data () {
+    return {
+      isleader: false,
+      isadmin: false,
+      groupTaskVisible: false,
+      groupMenberVisible: false,
+      // visible: true,
+      group_id: '',
+      user: {
+        user_id: '',
+        user_name: ''
+      },
+      search: '',
+      usergroup: [],
+      grouptask: [],
+      menberlist: [],
+      leaderlist: [],
+      adminlist: []
+    }
+  },
+  methods: {
+    init () {
+      this.getgroup()
+      this.searchleader()
+      this.searchadmin()
+    },
+    getgroup () {
+      this.$http.post(this.url + '/group/getall', {
+        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+      }).then((res) => {
+        console.log(res)
+        let a = []
+        let b = []
+        let num = Math.floor(res.data.length / 4)
+        for (let i = 0; i <= num; i++) {
+          let n = 4 * i
+          for (let m = 0; m < 4; m++) {
+            if (res.data[m + n]) {
+              a.push(res.data[m + n])
+            }
+          }
+          b.push(a)
+          a = []
+        }
+        console.log(b)
+        this.usergroup = b
+        for (let x = 0; x < this.usergroup.length; x++) {
+          for (let y = 0; y < this.usergroup[x].length; y++) {
+            if (this.usergroup[x][y].group_leaderId === JSON.parse(localStorage.getItem('EX_token')).user_id) {
+              this.$set(this.usergroup[x][y], 'isleader', true)
+            } else {
+              this.$set(this.usergroup[x][y], 'isleader', false)
+            }
+          }
+        }
+      })
+    },
+    watchgrouptask (id) {
+      for (let i = 0; i < this.leaderlist.length; i++) {
+        if (id === this.leaderlist[i]) {
+          this.isleader = true
+        }
+      }
+      let self = this
+      this.groupTaskVisible = true
+      this.$http.post(this.url + '/group/getgrouptask', {
+        group_id: id
+      }).then((res) => {
+        console.log(res)
+        if (res.data !== 0) {
+          for (let i = 0; i < res.data.split(',').length; i++) {
+            this.$http.post(this.url + '/task/findByid', {
+              task_id: res.data.split(',')[i]
+            }).then((res) => {
+              console.log(res)
+              self.grouptask.push(res.data[0])
+            })
+          }
+        } else {
+          this.$message({
+            message: '没有群组任务哦',
+            type: 'warning'
+          })
+        }
+      }).catch(() => { })
+      // for (let i = 0; i < self.grouptask.length; i++) {
+      //   if (self.grouptask[i].task_startdate === null) {
+      //     self.$set(self.grouptask[i], 'date', '日常任务')
+      //   } else {
+      //     let date = self.dateToString(new Date(self.grouptask[i].task_startdate)) + ' 至 ' + self.dateToString(new Date(self.grouptask[i].task_enddate))
+      //     self.$set(self.grouptask[i], 'date', date)
+      //   }
+      // }
+      // console.log(self.grouptask)
+    },
+    watchgoupmenber (id) {
+      this.group_id = id
+      for (let i = 0; i < this.leaderlist.length; i++) {
+        if (id === this.leaderlist[i]) {
+          this.isleader = true
+        }
+      }
+      let self = this
+      this.groupMenberVisible = true
+      this.$http.post(this.url + '/group/getgroupmenber', {
+        group_id: id
+      }).then((res) => {
+        // console.log(res)
+        let a = res.data.split(',')
+        for (let i = 0; i < a.length; i++) {
+          // console.log(a[i])
+          self.menberlist.push({
+            name: a[i]
+          })
+        }
+        // console.log(this.menberlist)
+      })
+    },
+    searchleader () {
+      let self = this
+      this.$http.post(this.url + '/group/searchleader', {
+        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+      }).then((res) => {
+        console.log(res)
+        for (let i = 0; i < res.data.length; i++) {
+          self.leaderlist.push(res.data[i].group_id)
+        }
+      }).catch(() => { })
+    },
+    levelup (item) {
+      console.log(item)
+      this.$confirm('是否让' + item.name + '获得管理员权限', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(this.url + '/group/beadmin', {
+          user_name: item.name,
+          group_id: this.group_id
+        }).then((res) => {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+        }).catch(() => { })
+        this.groupMenberVisible = false
+      }).catch(() => { })
+    },
+    goout (item) {
+      console.log(item)
+      this.$confirm('是否将' + item.name + '踢出该团队', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(this.url + '/group/goout', {
+          group_id: this.group_id,
+          user_name: item.name
+        }).then((res) => {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.init()
+        }).catch(() => { })
+      })
+    },
+    delegroup (item) {
+      this.$confirm('是否解散该团队', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(this.url + '/group/delegroup', {
+          group_id: item.group_id
+        }).then((res) => {
+          console.log(res)
+          this.$message({
+            message: '已解散该团队',
+            type: 'success'
+          })
+          this.init()
+        })
+      })
+    },
+    quitgroup (item) {
+      this.$confirm('是否退出该团队', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$http.post(this.url + '/group/quitgroup', {
+          group_id: item.group_id,
+          user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+          user_name: JSON.parse(localStorage.getItem('EX_token')).user_name
+        }).then((res) => {
+          console.log(res)
+          this.$message({
+            message: '已退出该团队',
+            type: 'success'
+          })
+          this.init()
+        })
+      })
+    },
+    searchadmin () {
+      let self = this
+      this.$http.post(this.url + '/group/searchadmin', {
+        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+      }).then((res) => {
+        console.log(res)
+        for (let i = 0; i < res.data.length; i++) {
+          self.adminlist.push(res.data[i].group_id)
+        }
+      }).catch(() => { })
+    },
+    searchGroup () {
+
+    },
+    closetask () {
+      this.grouptask = []
+      this.isleader = false
+    },
+    closemenber () {
+      this.menberlist = []
+      this.isleader = false
+    },
+    dateToString (date) {
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      if (month < 10) {
+        month = '0' + month
+      }
+      if (day < 10) {
+        day = '0' + day
+      }
+      let res = year + '-' + month + '-' + day
+      return res
+    }
+  },
+  created () {
+    this.init()
+  }
+}
+</script>
+
+<style type="text/css">
+.groupBody {
+  width: 100%;
+  height: 95%;
+}
+
+.groupItems {
+  width: 98%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.group-list {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+}
+
+.group-list {
+  margin: 1% auto;
+}
+
+.group-menberlist {
+  margin: 0 1%;
+}
+
+.searchBar {
+  width: 98%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 1%;
+}
+
+.searchInput {
+  width: 200px;
+}
+
+.searchButton {
+  margin-left: 1%;
+}
+</style>
