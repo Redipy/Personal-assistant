@@ -1,7 +1,7 @@
 <template>
   <div class="taskBody">
     <div class="searchBar">
-      <el-date-picker class="searchTask"
+      <!-- <el-date-picker class="searchTask"
                       v-model="search"
                       align="right"
                       type="date"
@@ -11,7 +11,7 @@
       <el-button class="searchButton"
                  @click="searchTask"
                  type="primary"
-                 round>搜索</el-button>
+                 round>搜索</el-button> -->
       <el-button class="newButton"
                  @click="addTask"
                  type="primary"
@@ -143,6 +143,27 @@
             </el-date-picker>
           </el-form-item>
         </template>
+        <el-form-item label="群组/个人"
+                      prop="detail">
+          <el-switch v-model="addForm.group"
+                     active-text="群组任务"
+                     inactive-text="个人任务">
+          </el-switch>
+        </el-form-item>
+        <template v-if="addForm.group">
+          <el-form-item label="群组名称"
+                        prop="group">
+            <el-select v-model="addForm.chose"
+                       filterable
+                       placeholder="请选择">
+              <el-option v-for="item in grouplist"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </template>
       </el-form>
       <span slot="footer"
             class="dialog-footer">
@@ -190,14 +211,18 @@ export default {
         name: '',
         detail: '',
         type: false,
-        date: ''
+        date: '',
+        group: ''
       },
       addForm: {
         name: '',
         detail: '',
         type: false,
-        date: ''
-      }
+        group: false,
+        date: '',
+        chose: ''
+      },
+      grouplist: []
     }
   },
   methods: {
@@ -255,6 +280,17 @@ export default {
     },
     addTask () {
       this.adddialogVisible = true
+      this.$http.post(this.url + '/group/getleaderoradmin', {
+        user_id: this.user_id
+      }).then((res) => {
+        console.log(res.data)
+        for (let i = 0; i < res.data.length; i++) {
+          this.grouplist.push({
+            value: res.data[i].group_id,
+            label: res.data[i].group_name
+          })
+        }
+      }).catch(() => { })
     },
     editDetail (data) {
       console.log(data.row)
@@ -330,32 +366,61 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        let date = ''
-        if (!this.addForm.type) {
-          date = ''
-        } else {
-          let start = this.dateToString(this.addForm.date[0])
-          let end = this.dateToString(this.addForm.date[1])
-          // console.log(start)
-          // console.log(end)
-          date = start + ' 至 ' + end
-        }
-        this.$http.post(this.url + '/task/addTask', {
-          task_name: this.addForm.name,
-          task_detail: this.addForm.detail,
-          task_userid: this.user_id,
-          task_date: date
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '新增成功'
+        console.log(this.addForm.group)
+        if (!this.addForm.group) {
+          let date = ''
+          if (!this.addForm.type) {
+            date = ''
+          } else {
+            let start = this.dateToString(this.addForm.date[0])
+            let end = this.dateToString(this.addForm.date[1])
+            // console.log(start)
+            // console.log(end)
+            date = start + ' 至 ' + end
+          }
+          this.$http.post(this.url + '/task/addTask', {
+            task_name: this.addForm.name,
+            task_detail: this.addForm.detail,
+            task_userid: this.user_id,
+            task_date: date
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '新增成功'
+            })
+            self.loadTable()
           })
-          self.loadTable()
-        })
-        this.adddialogVisible = false
+          this.adddialogVisible = false
+        } else {
+          let date = ''
+          if (!this.addForm.type) {
+            date = ''
+          } else {
+            let start = this.dateToString(this.addForm.date[0])
+            let end = this.dateToString(this.addForm.date[1])
+            // console.log(start)
+            // console.log(end)
+            date = start + ' 至 ' + end
+          }
+          this.$http.post(this.url + '/task/addgroupTask', {
+            task_name: this.addForm.name,
+            task_detail: this.addForm.detail,
+            task_userid: this.user_id,
+            task_date: date,
+            group_id: this.addForm.chose
+          }).then(() => {
+            this.$message({
+              type: 'success',
+              message: '新增成功'
+            })
+            self.loadTable()
+          })
+          this.adddialogVisible = false
+        }
       }).catch(() => { })
     },
     closeadd () {
+      this.grouplist = []
       this.addForm = {
         name: '',
         detail: '',
@@ -425,10 +490,9 @@ export default {
   margin-left: 1%;
 }
 
-.newButton {
-  /* float: right; */
+/* .newButton {
   margin-left: 80%;
-}
+} */
 
 .tableBody {
   margin-left: 1%;

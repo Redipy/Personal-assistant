@@ -57,6 +57,11 @@ export default {
           icon: 'el-icon-notebook-2'
         },
         {
+          title: '我的备忘录',
+          path: '/noforget',
+          icon: 'el-icon-s-order'
+        },
+        {
           title: '我的信息',
           path: '/message',
           icon: 'el-icon-message'

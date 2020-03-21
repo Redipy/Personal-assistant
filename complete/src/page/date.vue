@@ -6,7 +6,7 @@
         <p :class="data.isSelected ? 'is-selected' : ''">
           {{ data.day.split('-').slice(1).join('-') }}
         </p>
-        <span title="查看当天任务">
+        <span title="查看当天备忘录">
           <i class="el-icon-edit"
              v-if="data.isSelected"
              @click="edit(data)"></i>

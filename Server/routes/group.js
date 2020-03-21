@@ -28,6 +28,34 @@ router.post('/getall', function (req, res, next) {
   })
 });
 
+router.post('/getleaderoradmin', function (req, res, next) {
+  let sql = "select * from `group` where instr (group_adminId," + "'" + req.body.user_id + "')"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: "chucuole"
+      })
+    } else {
+      let sq = "select * from `group` where group_leaderId = '" + req.body.user_id + "'"
+      db.query(sq, (err, dat) => {
+        if (err) {
+          res.json({
+            err: "chucuole"
+          })
+        } else {
+          for (let i = 0; i < dat.length; i++) {
+            data.push(dat[i])
+          }
+          res.json({
+            status: 200,
+            data: data
+          })
+        }
+      })
+    }
+  })
+});
+
 router.post('/getgrouptask', function (req, res, next) {
   console.log(req.body.group_id)
   // SELECT * FROM `group`where instr (group_menberId,'1')

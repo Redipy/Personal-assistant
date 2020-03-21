@@ -39,6 +39,14 @@ const router = new Router({
           }
         },
         {
+          path: '/noforget',
+          name: 'noforget',
+          component: () => import('../page/noforget.vue'),
+          meta: {
+            title: '我的备忘录'
+          }
+        },
+        {
           path: '/message',
           name: 'message',
           component: () => import('../page/message.vue'),

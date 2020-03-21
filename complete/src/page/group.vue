@@ -58,8 +58,18 @@
                          label="任务名称"></el-table-column>
         <el-table-column property="task_detail"
                          label="任务描述"></el-table-column>
-        <!-- <el-table-column property="date"
-                         label="任务期限"></el-table-column> -->
+        <!-- <el-table-column fixed="right"
+                         label="操作"
+                         width="100">
+          <template slot-scope="scope">
+            <el-button @click="editDetail(scope)"
+                       type="text"
+                       size="small">编辑</el-button>
+            <el-button @click="over(scope)"
+                       type="text"
+                       size="small">完成</el-button>
+          </template>
+        </el-table-column> -->
       </el-table>
     </el-dialog>
 
