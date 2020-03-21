@@ -12,6 +12,8 @@ var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var taskRouter = require('./routes/task');
 var groupRouter = require('./routes/group');
+var noforgetRouter = require('./routes/noforget');
+var messageRouter = require('./routes/message');
 
 var app = express();
 
@@ -41,6 +43,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/task', taskRouter);
 app.use('/group', groupRouter);
+app.use('/noforget', noforgetRouter);
+app.use('/message', messageRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

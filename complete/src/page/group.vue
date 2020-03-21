@@ -78,6 +78,9 @@
                @close="closemenber()"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
+      <el-button @click="addmenber"
+                 type="primary"
+                 round>新增成员</el-button>
       <template v-if="isleader">
         <el-popover v-for="(item,index) in menberlist"
                     :key="index"
@@ -137,6 +140,42 @@ export default {
       this.getgroup()
       this.searchleader()
       this.searchadmin()
+    },
+    addmenber () {
+      this.$prompt('请输入用户名', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({ value }) => {
+        this.$http.post(this.url + '/message/invmessage', {
+          user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+          group_id: this.group_id,
+          time: this.dateToString(new Date()),
+          type: 1,
+          toname: value
+        }).then((res) => {
+          if (res.index === 1) {
+            this.$message({
+              type: 'success',
+              message: '邀请成功'
+            })
+          } else if (res.index === 2) {
+            this.$message({
+              type: 'info',
+              message: '请勿重复发送请求'
+            })
+          } else {
+            this.$message({
+              type: 'info',
+              message: '该用户已在群组中'
+            })
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '取消输入'
+        })
+      })
     },
     getgroup () {
       this.$http.post(this.url + '/group/getall', {

@@ -70,12 +70,12 @@ export default {
           title: '群组管理',
           path: '/group',
           icon: 'el-icon-tickets'
-        },
-        {
-          title: '个人信息管理',
-          path: '/info',
-          icon: 'el-icon-info'
         }
+        // {
+        //   title: '个人信息管理',
+        //   path: '/info',
+        //   icon: 'el-icon-info'
+        // }
       ]
     }
   },

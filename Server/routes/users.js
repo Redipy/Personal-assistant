@@ -63,4 +63,21 @@ router.post('/reg', function (req, res, next) {
   })
 });
 
+router.post('/getnameByid', function (req, res, next) {
+  let sql = "select user_name from user where user_id = '" + req.body.user_id + "'"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: err
+      })
+    } else {
+      console.log(data)
+      res.json({
+        status: 200,
+        data: data[0].user_name
+      })
+    }
+  })
+})
+
 module.exports = router;

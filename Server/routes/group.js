@@ -335,20 +335,20 @@ router.post('/goout', function (req, res, next) {
                 })
               } else {
                 let menberidlist = data[0].group_menberId.split(',')
-                console.log('11111111111111111111111')
-                console.log(id[0].user_id)
-                console.log(menberidlist)
+                // console.log('11111111111111111111111')
+                // console.log(id[0].user_id)
+                // console.log(menberidlist)
                 for (let i = 0; i < menberidlist.length; i++) {
                   console.log(typeof (menberidlist[i]))
                   if (id[0].user_id === Number(menberidlist[i])) {
-                    console.log('333333333333333333333')
-                    console.log(menberidlist[i])
+                    // console.log('333333333333333333333')
+                    // console.log(menberidlist[i])
                     menberidlist.splice(i, 1)
                     i--
                   }
                 }
-                console.log(menberidlist)
-                console.log('22222222222222222222222222')
+                // console.log(menberidlist)
+                // console.log('22222222222222222222222222')
                 let a = ''
                 for (let i = 0; i < menberidlist.length; i++) {
                   if (i < menberidlist.length - 1) {
@@ -406,6 +406,44 @@ router.post('/goout', function (req, res, next) {
               }
             })
           }
+        }
+      })
+    }
+  })
+});
+
+router.post('/joingroup', function (req, res, next) {
+  let sql = "select group_menberId from `group` where group_id = '" + req.body.group_id + "'"
+  db.query(sql, (err, menberlist) => {
+    if (err) {
+      res.json({
+        err: err
+      })
+    } else {
+      console.log(menberlist[0].group_menberId)
+      let sq = "select group_menberName from `group` where group_id = '" + req.body.group_id + "'"
+      db.query(sq, (err, menbernamelist) => {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          console.log(menbernamelist[0].group_menberName)
+          let a = menberlist[0].group_menberId + ',' + req.body.user_id
+          let b = menbernamelist[0].group_menberName + ',' + req.body.user_name
+          let s = "update `group` set group_menberId = '" + a + "', group_menberName = '" + b + "' where group_id = '" + req.body.group_id + "'"
+          db.query(s, (err, data) => {
+            if (err) {
+              res.json({
+                err: err
+              })
+            } else {
+              res.json({
+                status: 200,
+                data: data
+              })
+            }
+          })
         }
       })
     }

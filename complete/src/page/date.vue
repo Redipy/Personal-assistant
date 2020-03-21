@@ -28,7 +28,7 @@ export default {
       this.visible = true
       console.log(data)
       this.$router.push({
-        name: 'task',
+        name: 'noforget',
         params: {
           date: data.day
         }
