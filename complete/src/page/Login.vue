@@ -152,8 +152,8 @@ export default {
                     user_id: res.info.user_id,
                     user_name: res.info.user_name
                   }
-                  localStorage.setItem('EX_token', JSON.stringify(user))
-                  console.log(localStorage.getItem('EX_token'))
+                  sessionStorage.setItem('EX_token', JSON.stringify(user))
+                  console.log(sessionStorage.getItem('EX_token'))
                   self.$router.push('/')
                 }
                 self.loading = false

@@ -236,7 +236,7 @@ export default {
     },
     loadTable () {
       let self = this
-      this.user_id = JSON.parse(localStorage.getItem('EX_token')).user_id
+      this.user_id = JSON.parse(sessionStorage.getItem('EX_token')).user_id
       this.$http.post(this.url + '/task/findList', {
         user_id: this.user_id,
         date: this.dateToString(this.search),
@@ -360,7 +360,7 @@ export default {
     },
     sureAdd () {
       let self = this
-      this.user_id = JSON.parse(localStorage.getItem('EX_token')).user_id
+      this.user_id = JSON.parse(sessionStorage.getItem('EX_token')).user_id
       this.$confirm('是否新增？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

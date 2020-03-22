@@ -140,10 +140,10 @@ export default {
   methods: {
     init () {
       this.setNowTime()
-      console.log(localStorage.getItem('EX_token'))
+      console.log(sessionStorage.getItem('EX_token'))
       this.user = {
-        userid: JSON.parse(localStorage.getItem('EX_token')).user_id,
-        username: JSON.parse(localStorage.getItem('EX_token')).user_name
+        userid: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+        username: JSON.parse(sessionStorage.getItem('EX_token')).user_name
       }
       console.log(this.user)
     },

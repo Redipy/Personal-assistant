@@ -1,13 +1,13 @@
 <template>
   <div class="groupBody">
-    <div class="searchBar">
+    <!-- <div class="searchBar">
       <el-input class="searchInput"
                 v-model="search"></el-input>
       <el-button class="searchButton"
                  @click="searchGroup"
                  type="primary"
                  round>搜索</el-button>
-    </div>
+    </div> -->
     <div class="groupItems">
       <el-row v-for="(group, groupid) in usergroup"
               :key="groupid"
@@ -65,7 +65,7 @@
             <el-button @click="editDetail(scope)"
                        type="text"
                        size="small">编辑</el-button>
-            <el-button @click="over(scope)"
+            <el-button @click="over(scope)"g
                        type="text"
                        size="small">完成</el-button>
           </template>
@@ -78,10 +78,10 @@
                @close="closemenber()"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
-      <el-button @click="addmenber"
-                 type="primary"
-                 round>新增成员</el-button>
       <template v-if="isleader">
+        <el-button @click="addmenber"
+                   type="primary"
+                   round>新增成员</el-button>
         <el-popover v-for="(item,index) in menberlist"
                     :key="index"
                     class="group-menberlist"
@@ -147,7 +147,7 @@ export default {
         cancelButtonText: '取消'
       }).then(({ value }) => {
         this.$http.post(this.url + '/message/invmessage', {
-          user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
           group_id: this.group_id,
           time: this.dateToString(new Date()),
           type: 1,
@@ -179,7 +179,7 @@ export default {
     },
     getgroup () {
       this.$http.post(this.url + '/group/getall', {
-        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+        user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
         console.log(res)
         let a = []
@@ -199,7 +199,7 @@ export default {
         this.usergroup = b
         for (let x = 0; x < this.usergroup.length; x++) {
           for (let y = 0; y < this.usergroup[x].length; y++) {
-            if (this.usergroup[x][y].group_leaderId === JSON.parse(localStorage.getItem('EX_token')).user_id) {
+            if (this.usergroup[x][y].group_leaderId === JSON.parse(sessionStorage.getItem('EX_token')).user_id) {
               this.$set(this.usergroup[x][y], 'isleader', true)
             } else {
               this.$set(this.usergroup[x][y], 'isleader', false)
@@ -272,7 +272,7 @@ export default {
     searchleader () {
       let self = this
       this.$http.post(this.url + '/group/searchleader', {
-        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+        user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
         console.log(res)
         for (let i = 0; i < res.data.length; i++) {
@@ -344,8 +344,8 @@ export default {
       }).then(() => {
         this.$http.post(this.url + '/group/quitgroup', {
           group_id: item.group_id,
-          user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
-          user_name: JSON.parse(localStorage.getItem('EX_token')).user_name
+          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+          user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name
         }).then((res) => {
           console.log(res)
           this.$message({
@@ -359,7 +359,7 @@ export default {
     searchadmin () {
       let self = this
       this.$http.post(this.url + '/group/searchadmin', {
-        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+        user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
         console.log(res)
         for (let i = 0; i < res.data.length; i++) {

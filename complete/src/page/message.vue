@@ -48,7 +48,7 @@ export default {
     },
     async loadtable () {
       await this.$http.post(this.url + '/message/getByuserid', {
-        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id
+        user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
         console.log(res)
         this.tableData = res.data
@@ -71,8 +71,8 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http.post(this.url + '/group/joingroup', {
-          user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
-          user_name: JSON.parse(localStorage.getItem('EX_token')).user_name,
+          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+          user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name,
           group_id: scope.row.message_groupid
         }).then((res) => {
           this.$message({

@@ -59,18 +59,26 @@ router.post('/update', function (req, res, next) {
   // console.log(req.body.task_date)
   let startdate = ''
   let enddate = ''
+  let sql = ''
   if (req.body.task_date === '') {
     startdate = null
     enddate = null
+    sql = "update task set task_name = '" + req.body.task_name + "',task_detail = '" + req.body.task_detail + "',task_startdate = " + startdate + ",task_enddate = " + enddate + " where task_id = '" + req.body.task_id + "'"
   } else {
     startdate = req.body.task_date.split(' 至 ')[0]
     enddate = req.body.task_date.split(' 至 ')[1]
+    sql = "update task set task_name = '" + req.body.task_name + "',task_detail = '" + req.body.task_detail + "',task_startdate = '" + startdate + "',task_enddate = '" + enddate + "' where task_id = '" + req.body.task_id + "'"
   }
-  let sql = "update task set task_name = '" + req.body.task_name + "',task_detail = '" + req.body.task_detail + "',task_startdate = '" + startdate + "',task_enddate = '" + enddate + "' where task_id = '" + req.body.task_id + "'"
+  // if (startdate === null) {
+  //   let sql = "update task set task_name = '" + req.body.task_name + "',task_detail = '" + req.body.task_detail + "',task_startdate = " + startdate + ",task_enddate = " + enddate + " where task_id = '" + req.body.task_id + "'"
+  // } else {
+  //   let sql = "update task set task_name = '" + req.body.task_name + "',task_detail = '" + req.body.task_detail + "',task_startdate = '" + startdate + "',task_enddate = '" + enddate + "' where task_id = '" + req.body.task_id + "'"
+  // }
+
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       res.json({
@@ -107,20 +115,27 @@ router.post('/addTask', function (req, res, next) {
   console.log(req.body.task_date)
   let startdate = ''
   let enddate = ''
+  let sql = ''
   if (req.body.task_date === '') {
     startdate = null
     enddate = null
+    sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "'," + startdate + "," + enddate + ",'" + req.body.task_userid + "',0)"
   } else {
     startdate = req.body.task_date.split(' 至 ')[0]
     enddate = req.body.task_date.split(' 至 ')[1]
+    sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "','" + startdate + "','" + enddate + "','" + req.body.task_userid + "',0)"
   }
   console.log(startdate)
   console.log(enddate)
-  let sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "'," + startdate + "," + enddate + ",'" + req.body.task_userid + "',0)"
+  // if (startdate === null) {
+  //   let sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "'," + startdate + "," + enddate + ",'" + req.body.task_userid + "',0)"
+  // } else {
+  //   let sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "','" + startdate + "','" + enddate + "','" + req.body.task_userid + "',0)"
+  // }
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       res.json({

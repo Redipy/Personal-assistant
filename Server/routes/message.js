@@ -109,4 +109,21 @@ router.post('/invmessage', function (req, res, next) {
   })
 });
 
+router.post('/howmany', function (req, res, next) {
+  let sql = "select count(*) from message where message_userid = '" + req.body.user_id + "'"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: err
+      })
+    } else {
+      console.log(data[0]['count(*)'])
+      res.json({
+        status: 200,
+        data: data[0]['count(*)']
+      })
+    }
+  })
+})
+
 module.exports = router;

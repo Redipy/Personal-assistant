@@ -12,7 +12,8 @@
       <div class="info">
         <el-tooltip placement="left">
           <span slot="content">{{message ? `有${message}条消息` : '消息中心'}}</span>
-          <i class="el-icon-message-solid"></i>
+          <i @click="tomessage()"
+             class="el-icon-message-solid"></i>
         </el-tooltip>
       </div>
       <el-dropdown class="headerDropdown"
@@ -40,7 +41,7 @@ export default {
   name: 'Header',
   data () {
     return {
-      message: 1,
+      message: '',
       username: 'admin!',
       collapse: false
     }
@@ -55,15 +56,24 @@ export default {
     // 用户名下拉菜单选择事件
     handleCommand (command) {
       if (command === 'logout') {
-        localStorage.removeItem('EX_token')
+        sessionStorage.removeItem('EX_token')
         this.$router.push('/login')
       }
+    },
+
+    tomessage () {
+      this.$router.push('/message')
     }
   },
   mounted () {
-    if (localStorage.getItem('EX_token')) {
-      this.username = JSON.parse(localStorage.getItem('EX_token')).user_name
+    if (sessionStorage.getItem('EX_token')) {
+      this.username = JSON.parse(sessionStorage.getItem('EX_token')).user_name
     }
+    this.$http.post(this.url + '/message/howmany', {
+      user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
+    }).then((res) => {
+      this.message = res.data
+    })
   }
 }
 </script>

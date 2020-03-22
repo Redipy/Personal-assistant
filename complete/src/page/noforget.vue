@@ -85,7 +85,7 @@ export default {
     loadinfo () {
       this.content = ''
       this.$http.post(this.url + '/noforget/getinfo', {
-        user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+        user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
         noforget_time: this.search
       }).then((res) => {
         if (res.index === 0) {
@@ -109,7 +109,7 @@ export default {
       }).then(() => {
         if (this.insert) {
           this.$http.post(this.url + '/noforget/insertinfo', {
-            user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+            user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
             noforget_info: this.content,
             noforget_time: this.search,
             insert: this.insert,
@@ -122,7 +122,7 @@ export default {
           }).catch(() => { console.log('报错') })
         } else {
           this.$http.post(this.url + '/noforget/updateinfo', {
-            user_id: JSON.parse(localStorage.getItem('EX_token')).user_id,
+            user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
             noforget_info: this.content,
             noforget_time: this.search,
             id: this.id
