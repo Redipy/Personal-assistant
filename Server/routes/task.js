@@ -151,20 +151,22 @@ router.post('/addgroupTask', function (req, res, next) {
   // console.log(req.body.task_name)
   // console.log(req.body.task_detail)
   // console.log(req.body.task_userid)
-  // console.log(req.body.task_date)
+  console.log(req.body.task_date)
   // console.log(req.body.group_id)
   let startdate = ''
   let enddate = ''
+  let sql = ''
   if (req.body.task_date === '') {
     startdate = null
     enddate = null
+    sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "'," + startdate + "," + enddate + ",'" + req.body.task_userid + "',1)"
   } else {
     startdate = req.body.task_date.split(' 至 ')[0]
     enddate = req.body.task_date.split(' 至 ')[1]
+    sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "','" + startdate + "','" + enddate + "','" + req.body.task_userid + "',1)"
   }
   // console.log(startdate)
   // console.log(enddate)
-  let sql = "insert into task (task_name, task_detail, task_startdate, task_enddate, task_userid, task_type) values ('" + req.body.task_name + "','" + req.body.task_detail + "'," + startdate + "," + enddate + ",'" + req.body.task_userid + "',0)"
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
