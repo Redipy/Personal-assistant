@@ -10,7 +10,7 @@ router.post('/getall', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       if (data.length != 0) {
@@ -33,14 +33,14 @@ router.post('/getleaderoradmin', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       let sq = "select * from `group` where group_leaderId = '" + req.body.user_id + "'"
       db.query(sq, (err, dat) => {
         if (err) {
           res.json({
-            err: "chucuole"
+            err: err
           })
         } else {
           for (let i = 0; i < dat.length; i++) {
@@ -63,7 +63,7 @@ router.post('/getgrouptask', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       if (data[0].group_task !== null) {
@@ -93,7 +93,7 @@ router.post('/getgroupmenber', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       // console.log(data[0].group_menberName)
@@ -132,7 +132,7 @@ router.post('/searchadmin', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       console.log(data)
@@ -150,7 +150,7 @@ router.post('/searchleader', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       console.log(data)
@@ -169,14 +169,14 @@ router.post('/beadmin', function (req, res, next) {
   db.query(first, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       let sql = "select group_adminId from `group` where group_id = '" + req.body.group_id + "'"
       db.query(sql, (err, rrr) => {
         if (err) {
           res.json({
-            err: "chucuole"
+            err: err
           })
         } else {
           // console.log(rrr[0].group_adminId)
@@ -220,7 +220,7 @@ router.post('/delegroup', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       res.json({
@@ -236,7 +236,7 @@ router.post('/quitgroup', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       let menberidlist = data[0].group_menberId.split(',')
@@ -260,14 +260,14 @@ router.post('/quitgroup', function (req, res, next) {
       db.query(up, (err, dat) => {
         if (err) {
           res.json({
-            err: "chucuole"
+            err: err
           })
         } else {
           let ser = "select group_menberName from `group` where group_id = '" + req.body.group_id + "'"
           db.query(ser, (err, da) => {
             if (err) {
               res.json({
-                err: "chucuole"
+                err: err
               })
             } else {
               let list = da[0].group_menberName.split(',')
@@ -289,7 +289,7 @@ router.post('/quitgroup', function (req, res, next) {
               db.query(u, (err, da) => {
                 if (err) {
                   res.json({
-                    err: "chucuole"
+                    err: err
                   })
                 } else {
                   res.json({

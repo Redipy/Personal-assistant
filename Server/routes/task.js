@@ -96,7 +96,7 @@ router.post('/overTask', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       res.json({
@@ -179,7 +179,7 @@ router.post('/addgroupTask', function (req, res, next) {
       db.query(a, (err, gti) => {
         if (err) {
           res.json({
-            err: "chucuole"
+            err: err
           })
         } else {
           console.log('222222')
@@ -187,7 +187,7 @@ router.post('/addgroupTask', function (req, res, next) {
           db.query(b, (err, gtn) => {
             if (err) {
               res.json({
-                err: "chucuole"
+                err: err
               })
             } else {
               console.log('3333333')
@@ -222,7 +222,7 @@ router.post('/findByid', function (req, res, next) {
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       res.json({
