@@ -16,6 +16,28 @@
                  @click="addTask"
                  type="primary"
                  round>新增任务</el-button>
+      <el-select @change="filterchange"
+                 class="selectfilter"
+                 v-model="searchfilter.type"
+                 placeholder="请选择">
+        <el-option v-for="item in filteroptions"
+                   :key="item.value"
+                   :label="item.label"
+                   :value="item.value">
+        </el-option>
+      </el-select>
+      <!-- <template v-if="this.searchfilter.type == 3">
+        <el-select @change="filterchange"
+                   class="selectfilter"
+                   v-model="searchfilter.name"
+                   placeholder="请选择">
+          <el-option v-for="item in nameoptions"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value">
+          </el-option>
+        </el-select>
+      </template> -->
     </div>
     <div class="tableBody">
       <el-table :data="tableData"
@@ -200,6 +222,25 @@ export default {
           }
         }]
       },
+      filteroptions: [
+        {
+          value: 1,
+          label: '所有任务'
+        },
+        {
+          value: 2,
+          label: '个人任务'
+        },
+        {
+          value: 3,
+          label: '群组任务'
+        }
+      ],
+      nameoptions: [],
+      searchfilter: {
+        type: 1,
+        name: ''
+      },
       dialogVisible: false,
       adddialogVisible: false,
       currentPage: 1,
@@ -233,6 +274,7 @@ export default {
         this.search = new Date()
       }
       this.loadTable()
+      this.loadName()
     },
     loadTable () {
       let self = this
@@ -244,7 +286,7 @@ export default {
         pagesize: 10
       })
         .then(function (res) {
-          console.log(res)
+          // console.log(res)
           self.length = res.length['count(*)']
           self.tableData = res.data
           for (let i = 0; i < self.tableData.length; i++) {
@@ -254,7 +296,7 @@ export default {
               self.tableData[i].task_type = '群组任务'
             }
             if (self.tableData[i].task_startdate) {
-              console.log(self.dateToString(new Date(self.tableData[i].task_startdate)))
+              // console.log(self.dateToString(new Date(self.tableData[i].task_startdate)))
               let date = self.dateToString(new Date(self.tableData[i].task_startdate)) + ' 至 ' + self.dateToString(new Date(self.tableData[i].task_enddate))
               self.$set(self.tableData[i], 'date', date)
             } else {
@@ -266,10 +308,74 @@ export default {
           console.log(res)
         })
     },
+    loadFilterTable () {
+      let self = this
+      console.log('111111111111')
+      this.$http.post(this.url + '/task/findByfilter', {
+        user_id: this.user_id,
+        type: this.searchfilter.type,
+        name: this.searchfilter.name,
+        pageno: this.currentPage,
+        pagesize: 10
+      }).then((res) => {
+        console.log(res)
+        self.length = res.length['count(*)']
+        self.tableData = res.data
+        for (let i = 0; i < self.tableData.length; i++) {
+          if (self.tableData[i].task_type === 0) {
+            self.tableData[i].task_type = '个人任务'
+          } else if (self.tableData[i].task_type === 1) {
+            self.tableData[i].task_type = '群组任务'
+          }
+          if (self.tableData[i].task_startdate) {
+            // console.log(self.dateToString(new Date(self.tableData[i].task_startdate)))
+            let date = self.dateToString(new Date(self.tableData[i].task_startdate)) + ' 至 ' + self.dateToString(new Date(self.tableData[i].task_enddate))
+            self.$set(self.tableData[i], 'date', date)
+          } else {
+            self.$set(self.tableData[i], 'date', '日常任务')
+          }
+        }
+      })
+    },
+    loadName () {
+      let self = this
+      this.$http.post(this.url + '/group/getall', {
+        user_id: this.user_id
+      }).then((res) => {
+        // console.log(res)
+        self.nameoptions = []
+        for (let i = 0; i < res.data.length; i++) {
+          self.nameoptions.push({
+            value: res.data[i].group_id,
+            label: res.data[i].group_name
+          })
+        }
+      }).catch((res) => {
+        console.log(res)
+      })
+    },
+    filterchange () {
+      console.log(this.searchfilter)
+      switch (this.searchfilter.type) {
+        case 1:
+          this.loadTable()
+          break
+        case 2:
+          this.loadFilterTable()
+          break
+        case 3:
+          this.loadFilterTable()
+          break
+      }
+    },
     currentChange (currentPage) {
       this.currentPage = currentPage
-      console.log(this.currentPage)
-      this.loadTable()
+      // console.log(this.currentPage)
+      if (this.searchfilter.type === 1) {
+        this.loadTable()
+      } else {
+        this.loadFilterTable()
+      }
     },
     searchTask () {
       let data = ''
@@ -283,7 +389,7 @@ export default {
       this.$http.post(this.url + '/group/getleaderoradmin', {
         user_id: this.user_id
       }).then((res) => {
-        console.log(res.data)
+        // console.log(res.data)
         for (let i = 0; i < res.data.length; i++) {
           this.grouplist.push({
             value: res.data[i].group_id,
@@ -487,6 +593,10 @@ export default {
 }
 
 .searchButton {
+  margin-left: 1%;
+}
+
+.selectfilter {
   margin-left: 1%;
 }
 

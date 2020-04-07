@@ -14,7 +14,7 @@ router.post('/findList', function (req, res, next) {
   db.query(first, (err, data) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
       if (data[0]['count(*)'] == 0) {
@@ -28,7 +28,7 @@ router.post('/findList', function (req, res, next) {
         db.query(sql, (err, rows) => {
           if (err) {
             res.json({
-              err: "chucuole"
+              err: err
             })
           } else {
             // console.log(data[0]['count(*)'])
@@ -190,10 +190,10 @@ router.post('/addgroupTask', function (req, res, next) {
                 err: err
               })
             } else {
-              console.log('3333333')
-              console.log(data.insertId)
-              console.log(gti[0].group_task)
-              console.log(gtn[0].group_taskName)
+              // console.log('3333333')
+              // console.log(data.insertId)
+              // console.log(gti[0].group_task)
+              // console.log(gtn[0].group_taskName)
               let ti = gti[0].group_task + "," + data.insertId
               let tn = gtn[0].group_taskName + "," + req.body.task_name
               let c = "update `group` set group_task = '" + ti + "',group_taskName = '" + tn + "' where group_id = '" + req.body.group_id + "'"
@@ -231,6 +231,181 @@ router.post('/findByid', function (req, res, next) {
       })
     }
   })
+})
+
+router.post('/findByfilter', async function (req, res, next) {
+  let l = (req.body.pageno - 1) * req.body.pagesize
+  let first = ''
+  // let sql = "select * from task where task_userid = '" + req.body.user_id + "' limit " + l + "," + req.body.pagesize
+  let sql = ''
+  console.log(req.body.type)
+  if (req.body.type === '2') {
+    first = "select count(*) from task where task_userid = " + req.body.user_id + " and task_type = 0"
+    sql = "select * from task where task_userid = " + req.body.user_id + " and task_type = 0 limit " + l + "," + req.body.pagesize
+    db.query(first, (err, data) => {
+      if (err) {
+        res.json({
+          err: err
+        })
+      } else {
+        if (data[0]['count(*)'] == 0) {
+          res.json({
+            status: 200,
+            data: 0,
+            length: 0,
+            message: '无数据'
+          })
+        } else {
+          db.query(sql, (err, rows) => {
+            if (err) {
+              res.json({
+                err: err
+              })
+            } else {
+              if (rows.length != 0) {
+                res.json({
+                  status: 200,
+                  data: rows,
+                  length: data[0]
+                })
+              } else {
+                res.json({
+                  status: 200,
+                  data: 0
+                })
+              }
+            }
+          })
+        }
+      }
+    })
+  } else {
+    if (req.body.name === '') {
+      console.log('没name')
+      first = "select count(*) from task where task_userid = " + req.body.user_id + " and task_type = 1"
+      sql = "select * from task where task_userid = " + req.body.user_id + " and task_type = 1 limit " + l + "," + req.body.pagesize
+      db.query(first, (err, data) => {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          if (data[0]['count(*)'] == 0) {
+            res.json({
+              status: 200,
+              data: 0,
+              length: 0,
+              message: '无数据'
+            })
+          } else {
+            db.query(sql, (err, rows) => {
+              if (err) {
+                res.json({
+                  err: err
+                })
+              } else {
+                if (rows.length != 0) {
+                  res.json({
+                    status: 200,
+                    data: rows,
+                    length: data[0]
+                  })
+                } else {
+                  res.json({
+                    status: 200,
+                    data: 0
+                  })
+                }
+              }
+            })
+          }
+        }
+      })
+    } else {
+      console.log('有name')
+      first = "select group_task from `group` where group_id = '" + req.body.name + "'"
+      db.query(first, (err, data) => {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          // console.log(data[0].group_task)
+          if (data[0].group_task === null) {
+            res.json({
+              status: 200,
+              data: 0,
+              length: 0,
+              message: '无数据'
+            })
+          } else {
+            let list = data[0].group_task.split(',')
+            res.json({
+              status: 200,
+              data: list
+            })
+
+            // console.log(list)
+
+            // function recurTest(j, length) {
+            //   setTimeout(function () {
+            //     console.log("第" + (j + 1) + "次循环");
+            //     if (++j < length) {
+            //       recurTest(j, length);
+            //     }
+            //   }, Math.random() * 3000);
+            // }
+            // recurTest(0, 5)
+
+            // (function a(i) {
+            //   sql = "select * from task where task_id = " + list[i]
+            //   db.query(sql, (err, rows) => {
+            //     // console.log(rows[0])
+            //     console.log('1111111')
+            //     r.push(rows[0])
+            //     i++
+            //     if (i < list.length) {
+            //       a(i)
+            //     } else {
+            //       return
+            //     }
+            //   })
+            // })(0)
+
+            // for (let i = 0; i < list.length; i++) {
+            //   sql = "select * from task where task_id = " + list[i]
+            //   db.query(sql, (err, rows) => {
+            //     // console.log(rows[0])
+            //     console.log('1111111')
+            //     r.push(rows[0])
+            //   })
+            //   if (i === list.length - 1) {
+            //     console.log('22222222222')
+            //     console.log(r)
+            //   }
+            // }
+
+            // let i = 0
+            // sql = "select * from task where task_id = " + list[0]
+            // db.query(sql, (err, rows) => {
+            //   if (err) {
+            //     res.json({
+            //       err: err
+            //     })
+            //   } else {
+            //     req.push(rows[0])
+            //     i++
+            //     if (i < list.length) {
+
+            //     }
+            //   }
+            // })
+          }
+
+        }
+      })
+    }
+  }
 })
 
 module.exports = router;

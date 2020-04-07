@@ -311,14 +311,14 @@ router.post('/goout', function (req, res, next) {
   db.query(s, (err, id) => {
     if (err) {
       res.json({
-        err: "chucuole"
+        err: err
       })
     } else {
-      let i = "select group_leaderId from group where group_id = '" + req.body.group_id + "'"
+      let i = "select group_leaderId from `group` where group_id = '" + req.body.group_id + "'"
       db.query(i, (err, f) => {
         if (err) {
           res.json({
-            err: 'chucuole'
+            err: err
           })
         } else {
           if (id === f) {
@@ -331,7 +331,7 @@ router.post('/goout', function (req, res, next) {
             db.query(sql, (err, data) => {
               if (err) {
                 res.json({
-                  err: "chucuole"
+                  err: err
                 })
               } else {
                 let menberidlist = data[0].group_menberId.split(',')
@@ -339,7 +339,7 @@ router.post('/goout', function (req, res, next) {
                 // console.log(id[0].user_id)
                 // console.log(menberidlist)
                 for (let i = 0; i < menberidlist.length; i++) {
-                  console.log(typeof (menberidlist[i]))
+                  // console.log(typeof (menberidlist[i]))
                   if (id[0].user_id === Number(menberidlist[i])) {
                     // console.log('333333333333333333333')
                     // console.log(menberidlist[i])
@@ -361,14 +361,14 @@ router.post('/goout', function (req, res, next) {
                 db.query(up, (err, dat) => {
                   if (err) {
                     res.json({
-                      err: "chucuole"
+                      err: err
                     })
                   } else {
                     let ser = "select group_menberName from `group` where group_id = '" + req.body.group_id + "'"
                     db.query(ser, (err, da) => {
                       if (err) {
                         res.json({
-                          err: "chucuole"
+                          err: err
                         })
                       } else {
                         let list = da[0].group_menberName.split(',')
@@ -390,12 +390,45 @@ router.post('/goout', function (req, res, next) {
                         db.query(u, (err, da) => {
                           if (err) {
                             res.json({
-                              err: "chucuole"
+                              err: err
                             })
                           } else {
-                            res.json({
-                              status: 200,
-                              message: '已踢出该团队'
+                            let c = "select group_adminId from `group` where group_id = '" + req.body.group_id + "'"
+                            db.query(c, (err, da) => {
+                              if (err) {
+                                res.json({
+                                  err: err
+                                })
+                              } else {
+                                let lis = da[0].group_adminId.split(',')
+                                for (let i = 0; i < lis.length; i++) {
+                                  if (id[0].user_id === Number(lis[i])) {
+                                    lis.splice(i, 1)
+                                    i--
+                                  }
+                                }
+                                let z = ''
+                                for (let i = 0; i < lis.length; i++) {
+                                  if (i < lis.length - 1) {
+                                    z = z + lis[i] + ','
+                                  } else {
+                                    z = z + lis[i]
+                                  }
+                                }
+                                let p = "update `group` set group_adminId = '" + z + "' where group_id = '" + req.body.group_id + "'"
+                                db.query(p, (err, d) => {
+                                  if (err) {
+                                    res.json({
+                                      err: err
+                                    })
+                                  } else {
+                                    res.json({
+                                      status: 200,
+                                      message: '已踢出该团队'
+                                    })
+                                  }
+                                })
+                              }
                             })
                           }
                         })
