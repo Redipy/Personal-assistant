@@ -32,7 +32,7 @@
             <el-dropdown-item>项目仓库</el-dropdown-item>
           </a>
           <el-dropdown-item divided
-                            command="updetail">修改信息</el-dropdown-item>
+                            command="updetail">修改密码</el-dropdown-item>
           <el-dropdown-item divided
                             command="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
@@ -85,10 +85,9 @@ export default {
       if (command === 'logout') {
         sessionStorage.removeItem('EX_token')
         this.$router.push('/login')
+      } else if (command === 'updetail') {
+        this.$router.push('/info')
       }
-      //  else if (command === 'updetail') {
-      //   this.updetail()
-      // }
     },
 
     tomessage () {
