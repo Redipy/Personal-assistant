@@ -9,7 +9,7 @@
              unique-opened
              router>
       <template v-for="item in items">
-        <template v-if="item.subItems">
+        <!-- <template v-if="item.subItems">
           <el-submenu :index="item.path"
                       :key="item.title">
             <template slot="title">
@@ -23,13 +23,13 @@
             </el-menu-item>
           </el-submenu>
         </template>
-        <template v-else>
-          <el-menu-item :index="item.path"
-                        :key="item.title">
-            <i :class="item.icon"></i>
-            <span slot="title">{{item.title}}</span>
-          </el-menu-item>
-        </template>
+        <template v-else> -->
+        <el-menu-item :index="item.path"
+                      :key="item.title">
+          <i :class="item.icon"></i>
+          <span slot="title">{{item.title}}</span>
+        </el-menu-item>
+        <!-- </template> -->
       </template>
     </el-menu>
   </el-aside>
@@ -70,12 +70,12 @@ export default {
           title: '群组管理',
           path: '/group',
           icon: 'el-icon-tickets'
+        },
+        {
+          title: '修改密码',
+          path: '/info',
+          icon: 'el-icon-info'
         }
-        // {
-        //   title: '个人信息管理',
-        //   path: '/info',
-        //   icon: 'el-icon-info'
-        // }
       ]
     }
   },

@@ -28,6 +28,53 @@ router.post('/getall', function (req, res, next) {
   })
 });
 
+router.post('/newgroup', function (req, res, next) {
+  // console.log(req.body.user_id)
+  // console.log(req.body.user_name)
+  // console.log(req.body.group_name)
+  let sql = "select * from `group` where group_name = '" + req.body.group_name + "'"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: err
+      })
+    } else {
+      // console.log(data)
+      if (data.length != 0) {
+        res.json({
+          status: 200,
+          data: data,
+          message: '已有该群组'
+        })
+      } else {
+        let sq = "insert into `group` (group_name, group_menberId, group_menberName, group_leaderId,group_leaderName) values ('" + req.body.group_name + "','" + req.body.user_id + "','" + req.body.user_name + "','" + req.body.user_id + "','" + req.body.user_name + "')"
+        db.query(sq, (err, da) => {
+          if (err) {
+            res.json({
+              err: err
+            })
+          } else {
+            let info = '创建群组' + req.body.group_name + '成功'
+            let s = "insert into message(message_info, message_from, message_time, message_userid, message_type) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + req.body.user_id + "','" + 0 + "')"
+            db.query(s, (err, d) => {
+              if (err) {
+                res.json({
+                  err: err
+                })
+              } else {
+                res.json({
+                  status: 200,
+                  message: '新增群组成功'
+                })
+              }
+            })
+          }
+        })
+      }
+    }
+  })
+});
+
 router.post('/getleaderoradmin', function (req, res, next) {
   let sql = "select * from `group` where instr (group_adminId," + "'" + req.body.user_id + "')"
   db.query(sql, (err, data) => {
@@ -57,7 +104,7 @@ router.post('/getleaderoradmin', function (req, res, next) {
 });
 
 router.post('/getgrouptask', function (req, res, next) {
-  console.log(req.body.group_id)
+  // console.log(req.body.group_id)
   // SELECT * FROM `group`where instr (group_menberId,'1')
   let sql = "select group_task from `group` where group_id = '" + req.body.group_id + "'"
   db.query(sql, (err, data) => {
@@ -127,7 +174,7 @@ router.post('/getgroupmenber', function (req, res, next) {
 });
 
 router.post('/searchadmin', function (req, res, next) {
-  console.log(req.body.user_id)
+  // console.log(req.body.user_id)
   let sql = "select * from `group` where instr (group_adminId," + "'" + req.body.user_id + "')"
   db.query(sql, (err, data) => {
     if (err) {
@@ -135,7 +182,7 @@ router.post('/searchadmin', function (req, res, next) {
         err: err
       })
     } else {
-      console.log(data)
+      // console.log(data)
       res.json({
         status: 200,
         data: data
@@ -145,7 +192,7 @@ router.post('/searchadmin', function (req, res, next) {
 });
 
 router.post('/searchleader', function (req, res, next) {
-  console.log(req.body.user_id)
+  // console.log(req.body.user_id)
   let sql = "select * from `group` where group_leaderId = '" + req.body.user_id + "'"
   db.query(sql, (err, data) => {
     if (err) {
@@ -153,7 +200,7 @@ router.post('/searchleader', function (req, res, next) {
         err: err
       })
     } else {
-      console.log(data)
+      // console.log(data)
       res.json({
         status: 200,
         data: data
@@ -163,8 +210,8 @@ router.post('/searchleader', function (req, res, next) {
 });
 
 router.post('/beadmin', function (req, res, next) {
-  console.log(req.body.user_name)
-  console.log(req.body.group_id)
+  // console.log(req.body.user_name)
+  // console.log(req.body.group_id)
   let first = "select user_id from user where user_name = '" + req.body.user_name + "'"
   db.query(first, (err, data) => {
     if (err) {
@@ -215,18 +262,47 @@ router.post('/beadmin', function (req, res, next) {
 });
 
 router.post('/delegroup', function (req, res, next) {
-  console.log(req.body.group_id)
-  let sql = "delete from `group` where group_id = '" + req.body.group_id + "'"
+  // console.log(req.body.group_id)
+  let sql = "select group_name from `group` where group_id = '" + req.body.group_id + "'"
   db.query(sql, (err, data) => {
     if (err) {
       res.json({
         err: err
       })
     } else {
-      res.json({
-        status: 200,
-        data: data
+      console.log('1')
+      let sq = "delete from `group` where group_id = '" + req.body.group_id + "'"
+      db.query(sq, (err, dat) => {
+        if (err) {
+          res.json({
+            err: err
+          })
+        } else {
+          console.log(data)
+          let n = data[0].group_name
+          let info = '您已解散群' + n
+          let s = "insert into message(message_info, message_from, message_time, message_userid, message_type) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + req.body.user_id + "','" + 0 + "')"
+          db.query(s, (err, da) => {
+            if (err) {
+              res.json({
+                err: err
+              })
+            } else {
+              console.log('3')
+              res.json({
+                status: 200,
+                data: data
+              })
+            }
+          })
+        }
       })
+      // let info = '您已解散群' + 
+      // let s = "insert into message(message_info, message_from, message_time, message_userid, message_type) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + req.body.user_id + "','" + 0 + "')"
+      // res.json({
+      //   status: 200,
+      //   data: data
+      // })
     }
   })
 });
@@ -292,9 +368,29 @@ router.post('/quitgroup', function (req, res, next) {
                     err: err
                   })
                 } else {
-                  res.json({
-                    status: 200,
-                    message: 'sucess'
+                  let n = "select group_name from `group` where group_id = '" + req.body.group_id + "'"
+                  db.query(n, (err, d) => {
+                    if (err) {
+                      res.json({
+                        err: err
+                      })
+                    } else {
+                      let n = d[0].group_name
+                      let info = '您已退出群' + n
+                      let s = "insert into message(message_info, message_from, message_time, message_userid, message_type) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + req.body.user_id + "','" + 0 + "')"
+                      db.query(s, (err, a) => {
+                        if (err) {
+                          res.json({
+                            err: err
+                          })
+                        } else {
+                          res.json({
+                            status: 200,
+                            message: 'sucess'
+                          })
+                        }
+                      })
+                    }
                   })
                 }
               })
@@ -422,10 +518,30 @@ router.post('/goout', function (req, res, next) {
                                       err: err
                                     })
                                   } else {
-                                    res.json({
-                                      status: 200,
-                                      message: '已踢出该团队'
+                                    let sn = "select group_name from `group` where group_id = '" + req.body.group_id + "'"
+                                    db.query(sn, (err, ddd) => {
+                                      if (err) {
+                                        res.json({
+                                          err: err
+                                        })
+                                      } else {
+                                        let info = "您被" + req.body.fuser_name + "踢出了群" + ddd[0].group_name
+                                        let ss = "insert into message(message_info, message_from, message_time, message_userid, message_type) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + id[0].user_id + "','" + 0 + "')"
+                                        db.query(ss, (err, dd) => {
+                                          if (err) {
+                                            res.json({
+                                              err: err
+                                            })
+                                          } else {
+                                            res.json({
+                                              status: 200,
+                                              message: '已踢出该团队'
+                                            })
+                                          }
+                                        })
+                                      }
                                     })
+                                    // let info = "您被" + req.body.user_name + "踢出了群" + 
                                   }
                                 })
                               }

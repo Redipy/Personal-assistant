@@ -23,7 +23,7 @@
                        @click="submitForm('ruleForm')">登录</el-button>
             <el-button class="reg-btn"
                        type="info"
-                       @click="reg()">注册</el-button>
+                       @click="reg()">去注册</el-button>
           </el-form-item>
         </el-form>
       </template>

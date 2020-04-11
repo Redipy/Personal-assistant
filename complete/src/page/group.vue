@@ -1,13 +1,11 @@
 <template>
   <div class="groupBody">
-    <!-- <div class="searchBar">
-      <el-input class="searchInput"
-                v-model="search"></el-input>
+    <div class="searchBar">
       <el-button class="searchButton"
-                 @click="searchGroup"
+                 @click="newGroup"
                  type="primary"
-                 round>搜索</el-button>
-    </div> -->
+                 round>新增群组</el-button>
+    </div>
     <div class="groupItems">
       <el-row v-for="(group, groupid) in usergroup"
               :key="groupid"
@@ -110,6 +108,30 @@
         </el-popover>
       </template>
     </el-dialog>
+
+    <el-dialog title="新增群组"
+               :visible.sync="newGroupVisible"
+               @close="closenew()"
+               width="30%"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false">
+      <el-form :model="groupinfo"
+               ref="groupinfo"
+               label-width="100px"
+               class="demo-ruleForm">
+        <el-form-item label="群组名称"
+                      prop="name">
+          <el-input v-model="groupinfo.group_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer"
+            class="dialog-footer">
+        <el-button @click="noAdd()">取 消</el-button>
+        <el-button type="primary"
+                   @click="sureAdd()">确 定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -117,8 +139,12 @@
 export default {
   data () {
     return {
+      groupinfo: {
+        group_name: ''
+      },
       isleader: false,
       isadmin: false,
+      newGroupVisible: false,
       groupTaskVisible: false,
       groupMenberVisible: false,
       // visible: true,
@@ -269,6 +295,9 @@ export default {
         // console.log(this.menberlist)
       })
     },
+    newGroup () {
+      this.newGroupVisible = true
+    },
     searchleader () {
       let self = this
       this.$http.post(this.url + '/group/searchleader', {
@@ -307,8 +336,11 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http.post(this.url + '/group/goout', {
+          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+          fuser_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name,
           group_id: this.group_id,
-          user_name: item.name
+          user_name: item.name,
+          time: this.dateToString(new Date())
         }).then((res) => {
           this.$message({
             message: res.message,
@@ -326,7 +358,9 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$http.post(this.url + '/group/delegroup', {
-          group_id: item.group_id
+          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+          group_id: item.group_id,
+          time: this.dateToString(new Date())
         }).then((res) => {
           console.log(res)
           this.$message({
@@ -346,7 +380,8 @@ export default {
         this.$http.post(this.url + '/group/quitgroup', {
           group_id: item.group_id,
           user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
-          user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name
+          user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name,
+          time: this.dateToString(new Date())
         }).then((res) => {
           console.log(res)
           this.$message({
@@ -378,6 +413,51 @@ export default {
     closemenber () {
       this.menberlist = []
       this.isleader = false
+    },
+    closenew () {
+      this.newGroupVisible = false
+      this.groupinfo = {
+        group_name: ''
+      }
+    },
+    noAdd () {
+      this.$confirm('是否取消新增？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.newGroupVisible = false
+      }).catch(() => { })
+    },
+    sureAdd () {
+      // let self = this
+      this.$confirm('是否新增？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        if (this.groupinfo.group_name === '') {
+          this.$message({
+            type: 'warning',
+            message: '请输入群名'
+          })
+        } else {
+          this.$http.post(this.url + '/group/newgroup', {
+            user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+            user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name,
+            group_name: this.groupinfo.group_name,
+            time: this.dateToString(new Date())
+          }).then((res) => {
+            console.log(res)
+            this.$message({
+              type: 'warning',
+              message: res.message
+            })
+            this.newGroupVisible = false
+            this.init()
+          }).catch(() => { })
+        }
+      }).catch(() => { })
     },
     dateToString (date) {
       let year = date.getFullYear()

@@ -10,11 +10,14 @@
     </div>
     <div class="headright">
       <div class="info">
-        <el-tooltip placement="left">
-          <span slot="content">{{message ? `有${message}条消息` : '消息中心'}}</span>
-          <i @click="tomessage()"
-             class="el-icon-message-solid"></i>
-        </el-tooltip>
+        <el-badge :is-dot="this.ismessage"
+                  class="item">
+          <el-tooltip placement="left">
+            <span slot="content">{{message ? `有${message}条消息` : '消息中心'}}</span>
+            <i @click="tomessage()"
+               class="el-icon-message-solid"></i>
+          </el-tooltip>
+        </el-badge>
       </div>
       <el-dropdown class="headerDropdown"
                    @command="handleCommand"
@@ -29,10 +32,32 @@
             <el-dropdown-item>项目仓库</el-dropdown-item>
           </a>
           <el-dropdown-item divided
+                            command="updetail">修改信息</el-dropdown-item>
+          <el-dropdown-item divided
                             command="logout">退出登录</el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <!-- <el-dialog title="个人信息"
+               @close="closeup()"
+               :visible.sync="dialogVisible"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               width="30%">
+      <el-form :model="Form"
+               ref="addForm"
+               label-width="100px"
+               class="demo-ruleForm">
+        <el-form-item label="用户名"
+                      prop="name">
+          <el-input v-model="Form.name"></el-input>
+        </el-form-item>
+        <el-form-item label="用户密码"
+                      prop="pass">
+          <el-input v-model="Form.pass"></el-input>
+        </el-form-item>
+      </el-form>
+    </el-dialog> -->
   </el-header>
 </template>
 <script>
@@ -41,7 +66,9 @@ export default {
   name: 'Header',
   data () {
     return {
+      // dialogVisible: false,
       message: '',
+      ismessage: false,
       username: 'admin!',
       collapse: false
     }
@@ -59,11 +86,20 @@ export default {
         sessionStorage.removeItem('EX_token')
         this.$router.push('/login')
       }
+      //  else if (command === 'updetail') {
+      //   this.updetail()
+      // }
     },
 
     tomessage () {
+      this.message = ''
+      this.ismessage = false
       this.$router.push('/message')
     }
+
+    // updetail () {
+    //   this.dialogVisible = true
+    // }
   },
   mounted () {
     if (sessionStorage.getItem('EX_token')) {
@@ -73,7 +109,12 @@ export default {
       user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
     }).then((res) => {
       this.message = res.data
+      if (this.message !== '') {
+        this.ismessage = true
+      }
     })
+    console.log(this.message)
+    console.log(this.ismessage)
   }
 }
 </script>

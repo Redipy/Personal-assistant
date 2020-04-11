@@ -472,7 +472,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        console.log(this.addForm.group)
+        // console.log(this.addForm.group)
         if (!this.addForm.group) {
           let date = ''
           if (!this.addForm.type) {

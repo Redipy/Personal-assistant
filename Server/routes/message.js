@@ -21,7 +21,7 @@ router.post('/getByuserid', function (req, res, next) {
   })
 });
 
-router.post('/deletemessage', function (req, res, next) {
+router.post('/deletemessage', function (req, res, next) { // 删除消息
   let sql = "delete from message where message_id = '" + req.body.message_id + "'"
   db.query(sql, (err, data) => {
     if (err) {
@@ -37,7 +37,7 @@ router.post('/deletemessage', function (req, res, next) {
   })
 });
 
-router.post('/invmessage', function (req, res, next) {
+router.post('/invmessage', function (req, res, next) { // 同意进群
   let a = "select * from `group` where instr (group_menberId," + "'" + req.body.toname + "')" + "and group_id = '" + req.body.group_id + "'"
   db.query(a, (err, a) => {
     if (err) {

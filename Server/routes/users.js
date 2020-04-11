@@ -80,4 +80,43 @@ router.post('/getnameByid', function (req, res, next) {
   })
 })
 
+router.post('/update', function (req, res, next) {
+  let sql = "select user_password from user where user_id = '" + req.body.user_id + "'"
+  db.query(sql, (err, data) => {
+    if (err) {
+      res.json({
+        err: err
+      })
+    } else {
+      if (req.body.pass === data[0].user_password) {
+        let sq = "update user set user_password = '" + req.body.npass + "' where user_id = '" + req.body.user_id + "'"
+        db.query(sq, (err, dat) => {
+          if (err) {
+            res.json({
+              err: err
+            })
+          } else {
+            res.json({
+              status: 200,
+              message: '密码修改成功',
+              data: 1
+            })
+          }
+        })
+      } else {
+        res.json({
+          status: 200,
+          message: '旧密码输入错误',
+          data: 0
+        })
+      }
+      // console.log(data)
+      // res.json({
+      //   status: 200,
+      //   data: data[0].user_name
+      // })
+    }
+  })
+})
+
 module.exports = router;
