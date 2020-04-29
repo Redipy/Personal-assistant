@@ -37,7 +37,7 @@ router.post('/deletemessage', function (req, res, next) { // 删除消息
   })
 });
 
-router.post('/invmessage', function (req, res, next) { // 同意进群
+router.post('/invmessage', function (req, res, next) { // 邀请进群
   let a = "select * from `group` where instr (group_menberId," + "'" + req.body.toname + "')" + "and group_id = '" + req.body.group_id + "'"
   db.query(a, (err, a) => {
     if (err) {
@@ -67,39 +67,45 @@ router.post('/invmessage', function (req, res, next) { // 同意进群
                   err: err
                 })
               } else {
-                // console.log(group_name[0].group_name)
-                let info = '邀请进入' + group_name[0].group_name
-                let b = "select * from message where message_info = '" + info + "'"
-                db.query(b, (err, b) => {
-                  if (err) {
-                    res.json({
-                      err: err
-                    })
-                  } else {
-                    if (b.length === 0) {
-                      let s = "insert into message(message_info,message_from,message_time,message_userid,message_type,message_groupid) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + message_userid[0].user_id + "','" + req.body.type + "','" + req.body.group_id + "')"
-                      db.query(s, (err, data) => {
-                        if (err) {
-                          res.json({
-                            err: err
-                          })
-                        } else {
-                          res.json({
-                            status: 200,
-                            index: 1,
-                            data: data
-                          })
-                        }
+                if (group_name[0].group_name) {
+                  // console.log(group_name[0].group_name)
+                  let info = '邀请进入' + group_name[0].group_name
+                  let b = "select * from message where message_info = '" + info + "'"
+                  db.query(b, (err, b) => {
+                    if (err) {
+                      res.json({
+                        err: err
                       })
                     } else {
-                      res.json({
-                        status: 200,
-                        index: 2
-                      })
+                      if (b.length === 0) {
+                        let s = "insert into message(message_info,message_from,message_time,message_userid,message_type,message_groupid) values('" + info + "','" + req.body.user_id + "','" + req.body.time + "','" + message_userid[0].user_id + "','" + req.body.type + "','" + req.body.group_id + "')"
+                        db.query(s, (err, data) => {
+                          if (err) {
+                            res.json({
+                              err: err
+                            })
+                          } else {
+                            res.json({
+                              status: 200,
+                              index: 1,
+                              data: data
+                            })
+                          }
+                        })
+                      } else {
+                        res.json({
+                          status: 200,
+                          index: 2
+                        })
+                      }
                     }
-                  }
-                })
-
+                  })
+                } else {
+                  res.json({
+                    status: 200,
+                    index: 3
+                  })
+                }
               }
             })
           }

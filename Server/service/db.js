@@ -5,6 +5,7 @@ const connection = mysql.createConnection({
     port: 3306,
     user: "root",
     password: "root",
+    // password: "RyZrrf<+t4eD",
     database: "complete"
 })
 connection.connect((err) => {
@@ -19,7 +20,6 @@ let query = (sql, callback) => {
     connection.query(sql, function (err, rows) {
         callback(err, rows);
     });
-    // connection.end();//end()的话好像就只能连接一次的样子
 }
 
 

@@ -495,7 +495,7 @@ export default {
               message: '新增成功'
             })
             self.loadTable()
-          })
+          }).catch(() => { })
           this.adddialogVisible = false
         } else {
           let date = ''

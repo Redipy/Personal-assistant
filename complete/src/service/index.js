@@ -11,9 +11,13 @@ let service = axios.create({
 service.interceptors.request.use(
   (res) => {
     // 判断请求方式是否为POST，进行转换格式
-    res.method === 'post'
-      ? res.data = qs.stringify({...res.data})
-      : res.params = {...res.params}
+    res.method === 'post' ?
+      res.data = qs.stringify({
+        ...res.data
+      }) :
+      res.params = {
+        ...res.params
+      }
     // 请求发送前进行处理
     return res
   },
@@ -26,7 +30,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (res) => {
     // console.log(res)
-    let { data } = res
+    let {
+      data
+    } = res
     return data
   },
   (err) => {

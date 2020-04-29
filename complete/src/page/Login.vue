@@ -144,7 +144,7 @@ export default {
               password: this.ruleForm.password
             })
               .then(function (res) {
-                // console.log(res)
+                console.log(res)
                 if (res.data === 1) {
                   self.$message.error('用户名或密码错误')
                 } else if (res.data === 0) {

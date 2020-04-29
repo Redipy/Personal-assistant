@@ -21,8 +21,9 @@
             <i :class="item.icon"></i>
           </div>
           <div class="homebox-info">
-            <p class="homebox-info-total">{{item.total}}</p>
-            <p class="homebox-info-title">{{item.title}}</p>
+            <!-- <p class="homebox-info-total">{{item.total}}</p> -->
+            <p @click="go(item.path)"
+               class="homebox-info-title">{{item.title}}</p>
           </div>
         </div>
       </div>
@@ -62,75 +63,81 @@ export default {
         [
           {
             icon: 'el-icon-service',
-            title: '今日任务',
-            total: 198397,
+            title: '日历',
+            path: '/date',
+            // total: 198397,
             bgColor: '#ebcc6f'
           },
 
           {
             icon: 'el-icon-star-off',
-            title: '历史完成任务',
-            total: 190857,
+            title: '我的任务',
+            path: '/task',
+            // total: 190857,
             bgColor: '#67c4ed'
           }
         ],
         [
           {
             icon: 'el-icon-edit-outline',
-            title: '群组新任务',
-            total: 9397,
+            title: '我的备忘录',
+            path: '/noforget',
+            // total: 9397,
             bgColor: '#af84cb'
           },
           {
             icon: 'el-icon-location-outline',
-            title: '群组历史完成任务',
-            total: 19,
+            title: '我的信息',
+            path: '/message',
+            // total: 19,
             bgColor: '#3acaa9'
           }
         ],
         [
           {
             icon: 'el-icon-share',
-            title: '我的日记',
-            total: 9097,
+            title: '群组管理',
+            path: '/group',
+            // total: 9097,
             bgColor: '#67c4ed'
           },
           {
             icon: 'el-icon-goods',
-            title: '我的在线文件',
-            total: 397,
+            title: '修改密码',
+            path: '/info',
+            // total: 397,
             bgColor: '#ebcc6f'
           }
         ]
       ],
       userweb: [
         {
-          src: '../../static/img/baidu.jpg',
+          src: 'static/img/baidu.jpg',
           name: '百度',
           path: 'https://www.baidu.com'
         },
         {
-          src: '../../static/img/bilibili.jpg',
+          src: 'static/img/bilibili.jpg',
           name: '哔哩哔哩',
           path: 'https://www.bilibili.com/'
         },
         {
-          src: '../../static/img/douyu.jpg',
+          src: 'static/img/douyu.jpg',
           name: '斗鱼',
           path: 'https://www.douyu.com/'
         },
         {
-          src: '../../static/img/github.jpg',
+          src: 'static/img/github.jpg',
           name: 'github',
           path: 'https://github.com/'
         },
         {
-          src: '../../static/img/google.jpg',
+          src: 'static/img/google.jpg',
           name: '谷歌翻译',
           path: 'https://translate.google.cn/'
         },
         {
-          src: '../../static/img/wangyi.jpg',
+          src: 'static/img/wangyi.jpg',
           name: '网易邮箱',
           path: 'https://email.163.com/'
         }
@@ -146,6 +153,10 @@ export default {
         username: JSON.parse(sessionStorage.getItem('EX_token')).user_name
       }
       console.log(this.user)
+    },
+    go (side) {
+      console.log(side)
+      this.$router.push(side)
     },
     setNowTime () {
       this.nowTime = this.dateToString(new Date())
@@ -313,7 +324,8 @@ export default {
 }
 .homebox-info-title {
   color: #666;
-  font-size: 13px;
+  font-size: 22px;
   margin: 0 auto;
+  cursor: pointer;
 }
 </style>

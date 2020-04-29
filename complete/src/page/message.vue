@@ -50,19 +50,19 @@ export default {
       await this.$http.post(this.url + '/message/getByuserid', {
         user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
         this.tableData = res.data
       }).catch(() => { console.log('出错') })
-      console.log(this.tableData.length)
+      // console.log(this.tableData.length)
       for (let i = 0; i < this.tableData.length; i++) {
         await this.$http.post(this.url + '/users/getnameByid', {
           user_id: this.tableData[i].message_from
         }).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$set(this.tableData[i], 'message_fromname', res.data)
         }).catch(() => { })
       }
-      console.log(this.tableData)
+      // console.log(this.tableData)
     },
     join (scope) {
       this.$confirm('是否加入群组？', '提示', {

@@ -87,9 +87,9 @@
                     width="160">
           <p>更改群员状态</p>
           <div style="text-align: right; margin: 0">
-            <el-button size="primary"
+            <!-- <el-button size="primary"
                        type="text"
-                       @click="levelup(item)">升级</el-button>
+                       @click="levelup(item)">升级</el-button> -->
             <el-button type="primary"
                        size="mini"
                        @click="goout(item)">踢出群</el-button>
@@ -189,10 +189,15 @@ export default {
               type: 'info',
               message: '请勿重复发送请求'
             })
-          } else {
+          } else if (res.index === 0) {
             this.$message({
               type: 'info',
               message: '该用户已在群组中'
+            })
+          } else if (res.index === 3) {
+            this.$message({
+              type: 'warning',
+              message: '该用户不存在'
             })
           }
         })

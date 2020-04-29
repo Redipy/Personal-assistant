@@ -5,7 +5,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 // 设置端口号
-var ServerConf = require("./config/ServerConf");
+// var ServerConf = require("./config/ServerConf");
 
 //引入路由
 var indexRouter = require('./routes/index');
@@ -26,6 +26,7 @@ var allowCors = function (req, res, next) {
 };
 
 app.use(allowCors);
+// app.user(ServerConf);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,7 +38,7 @@ app.use(express.urlencoded({
   extended: false
 }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'dist')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
