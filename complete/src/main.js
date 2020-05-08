@@ -19,9 +19,9 @@ Vue.use(ElementUI, {
 // Vue.use(VueQuillEditor)
 
 Vue.prototype.$http = service
-// Vue.prototype.url = 'http://localhost:3333'
+Vue.prototype.url = 'http://localhost:3333'
 // Vue.prototype.url = 'http://localhost'
-Vue.prototype.url = 'http://118.31.172.72'
+// Vue.prototype.url = 'http://118.31.172.72'
 
 /* eslint-disable no-new */
 new Vue({

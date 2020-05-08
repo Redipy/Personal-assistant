@@ -76,31 +76,31 @@ router.post('/newgroup', function (req, res, next) {
 });
 
 router.post('/getleaderoradmin', function (req, res, next) {
-  let sql = "select * from `group` where instr (group_adminId," + "'" + req.body.user_id + "')"
-  db.query(sql, (err, data) => {
+  // let sql = "select * from `group` where instr (group_adminId," + "'" + req.body.user_id + "')"
+  // db.query(sql, (err, data) => {
+  //   if (err) {
+  //     res.json({
+  //       err: err
+  //     })
+  //   } else {
+  let sq = "select * from `group` where group_leaderId = '" + req.body.user_id + "'"
+  db.query(sq, (err, dat) => {
     if (err) {
       res.json({
         err: err
       })
     } else {
-      let sq = "select * from `group` where group_leaderId = '" + req.body.user_id + "'"
-      db.query(sq, (err, dat) => {
-        if (err) {
-          res.json({
-            err: err
-          })
-        } else {
-          for (let i = 0; i < dat.length; i++) {
-            data.push(dat[i])
-          }
-          res.json({
-            status: 200,
-            data: data
-          })
-        }
+      // for (let i = 0; i < dat.length; i++) {
+      //   data.push(dat[i])
+      // }
+      res.json({
+        status: 200,
+        data: dat
       })
     }
   })
+  //   }
+  // })
 });
 
 router.post('/getgrouptask', function (req, res, next) {

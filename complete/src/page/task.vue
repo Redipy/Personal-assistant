@@ -459,7 +459,7 @@ export default {
             type: 'success',
             message: '修改成功'
           })
-          self.loadTable()
+          self.filterchange()
         })
         this.dialogVisible = false
       }).catch(() => { })
