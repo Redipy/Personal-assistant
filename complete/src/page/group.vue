@@ -113,6 +113,7 @@
                :visible.sync="newGroupVisible"
                @close="closenew()"
                width="30%"
+               rules="addrules"
                :close-on-click-modal="false"
                :close-on-press-escape="false">
       <el-form :model="groupinfo"
@@ -139,6 +140,14 @@
 export default {
   data () {
     return {
+      addrules: {
+        name: [
+          { required: true, message: '请输入群组名', trigger: 'blur' }
+        ],
+        detail: [
+          { required: true, message: '请输入任务描述', trigger: 'blur' }
+        ]
+      },
       groupinfo: {
         group_name: ''
       },
@@ -172,35 +181,42 @@ export default {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({ value }) => {
-        this.$http.post(this.url + '/message/invmessage', {
-          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
-          group_id: this.group_id,
-          time: this.dateToString(new Date()),
-          type: 1,
-          toname: value
-        }).then((res) => {
-          if (res.index === 1) {
-            this.$message({
-              type: 'success',
-              message: '邀请成功'
-            })
-          } else if (res.index === 2) {
-            this.$message({
-              type: 'info',
-              message: '请勿重复发送请求'
-            })
-          } else if (res.index === 0) {
-            this.$message({
-              type: 'info',
-              message: '该用户已在群组中'
-            })
-          } else if (res.index === 3) {
-            this.$message({
-              type: 'warning',
-              message: '该用户不存在'
-            })
-          }
-        })
+        if (value === null) {
+          this.$message({
+            type: 'warning',
+            message: '请输入用户名'
+          })
+        } else {
+          this.$http.post(this.url + '/message/invmessage', {
+            user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+            group_id: this.group_id,
+            time: this.dateToString(new Date()),
+            type: 1,
+            toname: value
+          }).then((res) => {
+            if (res.index === 1) {
+              this.$message({
+                type: 'success',
+                message: '邀请成功'
+              })
+            } else if (res.index === 2) {
+              this.$message({
+                type: 'info',
+                message: '请勿重复发送请求'
+              })
+            } else if (res.index === 0) {
+              this.$message({
+                type: 'info',
+                message: '该用户已在群组中'
+              })
+            } else if (res.index === 3) {
+              this.$message({
+                type: 'warning',
+                message: '该用户不存在'
+              })
+            }
+          })
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
@@ -484,7 +500,7 @@ export default {
 }
 </script>
 
-<style type="text/css">
+<style type="text/css" scoped>
 .groupBody {
   width: 100%;
   height: 95%;

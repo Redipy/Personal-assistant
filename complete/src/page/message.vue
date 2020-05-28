@@ -110,7 +110,7 @@ export default {
 }
 </script>
 
-<style type="text/css">
+<style type="text/css" scoped>
 .messagebody {
   width: 100%;
   height: 100%;

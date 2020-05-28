@@ -77,32 +77,61 @@ export default {
     },
     change () {
       // console.log(this.resetForm)
-      this.$confirm('是否确认修改密码', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$http.post(this.url + '/users/update', {
-          user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
-          pass: this.resetForm.password,
-          npass: this.resetForm.newpwd
-        }).then((res) => {
-          console.log(res)
-          if (res.data === 0) {
-            this.$message({
-              message: res.message + '请重新登录',
-              type: 'warning'
-            })
-          } else {
-            this.$message({
-              message: res.message,
-              type: 'success'
-            })
-            sessionStorage.removeItem('EX_token')
-            this.$router.push('/login')
-          }
-        }).catch(() => { })
-      }).catch(() => { })
+      this.$refs['resetForm'].validate(valid => {
+        if (!valid) {
+          this.$message.error('请正确输入新密码')
+          return false
+        } else {
+          this.$confirm('是否确认修改密码', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            this.$http.post(this.url + '/users/update', {
+              user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id,
+              pass: this.resetForm.password,
+              npass: this.resetForm.newpwd
+            }).then((res) => {
+              console.log(res)
+              if (res.data === 0) {
+                if (sessionStorage.getItem('time')) {
+                  if (Number(sessionStorage.getItem('time')) === 5) {
+                    this.$message({
+                      message: '已输入5次错误密码，请重新登陆',
+                      type: 'warning'
+                    })
+                    sessionStorage.removeItem('time')
+                    sessionStorage.removeItem('EX_token')
+                    this.$router.push('/login')
+                  } else {
+                    sessionStorage.setItem('time', Number(sessionStorage.getItem('time')) + 1)
+                    let t = 5 - sessionStorage.getItem('time')
+                    this.$message({
+                      message: res.message + ',剩余机会：' + t,
+                      type: 'warning'
+                    })
+                  }
+                } else {
+                  sessionStorage.setItem('time', 1)
+                  let t = 5 - sessionStorage.getItem('time')
+                  this.$message({
+                    message: res.message + ',剩余机会：' + t,
+                    type: 'warning'
+                  })
+                }
+              } else {
+                this.$message({
+                  message: res.message + '请重新登录',
+                  type: 'success'
+                })
+                sessionStorage.removeItem('time')
+                sessionStorage.removeItem('EX_token')
+                this.$router.push('/login')
+              }
+            }).catch(() => { })
+          }).catch(() => { })
+        }
+      })
     }
   },
   created () {
@@ -111,7 +140,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-form {
   width: 60%;
   margin: 50px auto 0;

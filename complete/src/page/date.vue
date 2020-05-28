@@ -37,7 +37,7 @@ export default {
   }
 }
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .is-selected {
   color: #1989fa;
 }

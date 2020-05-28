@@ -93,6 +93,7 @@
                width="30%">
       <el-form :model="ruleForm"
                ref="ruleForm"
+               :rules="addrules"
                label-width="100px"
                class="demo-ruleForm">
         <el-form-item label="任务名称"
@@ -104,7 +105,7 @@
           <el-input v-model="ruleForm.detail"></el-input>
         </el-form-item>
         <el-form-item label="任务类型"
-                      prop="detail">
+                      prop="type">
           <el-switch v-model="ruleForm.type"
                      active-text="期限任务"
                      inactive-text="日常任务">
@@ -137,6 +138,7 @@
                width="30%">
       <el-form :model="addForm"
                ref="addForm"
+               :rules="addrules"
                label-width="100px"
                class="demo-ruleForm">
         <el-form-item label="任务名称"
@@ -148,7 +150,7 @@
           <el-input v-model="addForm.detail"></el-input>
         </el-form-item>
         <el-form-item label="任务类型"
-                      prop="detail">
+                      prop="type">
           <el-switch v-model="addForm.type"
                      active-text="期限任务"
                      inactive-text="日常任务">
@@ -166,7 +168,7 @@
           </el-form-item>
         </template>
         <el-form-item label="群组/个人"
-                      prop="detail">
+                      prop="group">
           <el-switch v-model="addForm.group"
                      active-text="群组任务"
                      inactive-text="个人任务">
@@ -200,6 +202,14 @@
 export default {
   data () {
     return {
+      addrules: {
+        name: [
+          { required: true, message: '请输入任务名', trigger: 'blur' }
+        ],
+        detail: [
+          { required: true, message: '请输入任务描述', trigger: 'blur' }
+        ]
+      },
       pickerOptions: {
         shortcuts: [{
           text: '今天',
@@ -432,98 +442,112 @@ export default {
       }).catch(() => { })
     },
     sure () {
-      let self = this
-      this.$confirm('是否修改？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // console.log(this.ruleForm.date)
-        let date = ''
-        if (!this.ruleForm.type) {
-          date = ''
+      this.$refs['ruleForm'].validate(valid => {
+        if (!valid) {
+          this.$message.error('请输入任务名与描述')
+          return false
         } else {
-          let start = this.dateToString(this.ruleForm.date[0])
-          let end = this.dateToString(this.ruleForm.date[1])
-          // console.log(start)
-          // console.log(end)
-          date = start + ' 至 ' + end
+          let self = this
+          this.$confirm('是否修改？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+          }).then(() => {
+            // console.log(this.ruleForm.date)
+            let date = ''
+            if (!this.ruleForm.type) {
+              date = ''
+            } else {
+              let start = this.dateToString(this.ruleForm.date[0])
+              let end = this.dateToString(this.ruleForm.date[1])
+              // console.log(start)
+              // console.log(end)
+              date = start + ' 至 ' + end
+            }
+            this.$http.post(this.url + '/task/update', {
+              task_id: this.ruleForm.id,
+              task_name: this.ruleForm.name,
+              task_detail: this.ruleForm.detail,
+              task_date: date
+            }).then(() => {
+              this.$message({
+                type: 'success',
+                message: '修改成功'
+              })
+              self.filterchange()
+            })
+            this.dialogVisible = false
+          }).catch(() => { })
         }
-        this.$http.post(this.url + '/task/update', {
-          task_id: this.ruleForm.id,
-          task_name: this.ruleForm.name,
-          task_detail: this.ruleForm.detail,
-          task_date: date
-        }).then(() => {
-          this.$message({
-            type: 'success',
-            message: '修改成功'
-          })
-          self.filterchange()
-        })
-        this.dialogVisible = false
-      }).catch(() => { })
+      })
     },
     sureAdd () {
-      let self = this
-      this.user_id = JSON.parse(sessionStorage.getItem('EX_token')).user_id
-      this.$confirm('是否新增？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        // console.log(this.addForm.group)
-        if (!this.addForm.group) {
-          let date = ''
-          if (!this.addForm.type) {
-            date = ''
-          } else {
-            let start = this.dateToString(this.addForm.date[0])
-            let end = this.dateToString(this.addForm.date[1])
-            // console.log(start)
-            // console.log(end)
-            date = start + ' 至 ' + end
-          }
-          this.$http.post(this.url + '/task/addTask', {
-            task_name: this.addForm.name,
-            task_detail: this.addForm.detail,
-            task_userid: this.user_id,
-            task_date: date
-          }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '新增成功'
-            })
-            self.loadTable()
-          }).catch(() => { })
-          this.adddialogVisible = false
+      this.$refs['addForm'].validate(valid => {
+        if (!valid) {
+          this.$message.error('请输入任务名与描述')
+          return false
         } else {
-          let date = ''
-          if (!this.addForm.type) {
-            date = ''
-          } else {
-            let start = this.dateToString(this.addForm.date[0])
-            let end = this.dateToString(this.addForm.date[1])
-            // console.log(start)
-            // console.log(end)
-            date = start + ' 至 ' + end
-          }
-          this.$http.post(this.url + '/task/addgroupTask', {
-            task_name: this.addForm.name,
-            task_detail: this.addForm.detail,
-            task_userid: this.user_id,
-            task_date: date,
-            group_id: this.addForm.chose
+          let self = this
+          this.user_id = JSON.parse(sessionStorage.getItem('EX_token')).user_id
+          this.$confirm('是否新增？', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
           }).then(() => {
-            this.$message({
-              type: 'success',
-              message: '新增成功'
-            })
-            self.loadTable()
-          })
-          this.adddialogVisible = false
+            // console.log(this.addForm.group)
+            if (!this.addForm.group) {
+              let date = ''
+              if (!this.addForm.type) {
+                date = ''
+              } else {
+                let start = this.dateToString(this.addForm.date[0])
+                let end = this.dateToString(this.addForm.date[1])
+                // console.log(start)
+                // console.log(end)
+                date = start + ' 至 ' + end
+              }
+              this.$http.post(this.url + '/task/addTask', {
+                task_name: this.addForm.name,
+                task_detail: this.addForm.detail,
+                task_userid: this.user_id,
+                task_date: date
+              }).then(() => {
+                this.$message({
+                  type: 'success',
+                  message: '新增成功'
+                })
+                self.loadTable()
+              }).catch(() => { })
+              this.adddialogVisible = false
+            } else {
+              let date = ''
+              if (!this.addForm.type) {
+                date = ''
+              } else {
+                let start = this.dateToString(this.addForm.date[0])
+                let end = this.dateToString(this.addForm.date[1])
+                // console.log(start)
+                // console.log(end)
+                date = start + ' 至 ' + end
+              }
+              this.$http.post(this.url + '/task/addgroupTask', {
+                task_name: this.addForm.name,
+                task_detail: this.addForm.detail,
+                task_userid: this.user_id,
+                task_date: date,
+                group_id: this.addForm.chose
+              }).then(() => {
+                this.$message({
+                  type: 'success',
+                  message: '新增成功'
+                })
+                self.loadTable()
+              })
+              this.adddialogVisible = false
+            }
+          }).catch(() => { })
         }
-      }).catch(() => { })
+      })
     },
     closeadd () {
       this.grouplist = []
@@ -574,7 +598,7 @@ export default {
   }
 }
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .taskBody {
   width: 100%;
   height: 100%;

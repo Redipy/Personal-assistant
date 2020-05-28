@@ -192,7 +192,7 @@ export default {
   }
 }
 </script>
-<style type="text/css">
+<style type="text/css" scoped>
 .home {
   height: 95%;
   display: flex;

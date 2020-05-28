@@ -206,7 +206,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .el-loading-spinner {
   top: 80%;
 }
