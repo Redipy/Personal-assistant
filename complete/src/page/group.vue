@@ -228,7 +228,7 @@ export default {
       this.$http.post(this.url + '/group/getall', {
         user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
         let a = []
         let b = []
         let num = Math.floor(res.data.length / 4)
@@ -242,7 +242,7 @@ export default {
           b.push(a)
           a = []
         }
-        console.log(b)
+        // console.log(b)
         this.usergroup = b
         for (let x = 0; x < this.usergroup.length; x++) {
           for (let y = 0; y < this.usergroup[x].length; y++) {
@@ -266,13 +266,13 @@ export default {
       this.$http.post(this.url + '/group/getgrouptask', {
         group_id: id
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
         if (res.data !== 0) {
           for (let i = 0; i < res.data.split(',').length; i++) {
             this.$http.post(this.url + '/task/findByid', {
               task_id: res.data.split(',')[i]
             }).then((res) => {
-              console.log(res)
+              // console.log(res)
               self.grouptask.push(res.data[0])
             })
           }
@@ -324,14 +324,14 @@ export default {
       this.$http.post(this.url + '/group/searchleader', {
         user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
         for (let i = 0; i < res.data.length; i++) {
           self.leaderlist.push(res.data[i].group_id)
         }
       }).catch(() => { })
     },
     levelup (item) {
-      console.log(item)
+      // console.log(item)
       this.$confirm('是否让' + item.name + '获得管理员权限', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -350,7 +350,7 @@ export default {
       }).catch(() => { })
     },
     goout (item) {
-      console.log(item)
+      // console.log(item)
       this.$confirm('是否将' + item.name + '踢出该团队', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -363,12 +363,19 @@ export default {
           user_name: item.name,
           time: this.dateToString(new Date())
         }).then((res) => {
-          this.$message({
-            message: res.message,
-            type: 'success'
-          })
-          this.init()
-          this.groupMenberVisible = false
+          if (res.index === 1) {
+            this.$message({
+              message: res.message,
+              type: 'success'
+            })
+            this.init()
+            this.groupMenberVisible = false
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning'
+            })
+          }
         }).catch(() => { })
       })
     },
@@ -383,7 +390,7 @@ export default {
           group_id: item.group_id,
           time: this.dateToString(new Date())
         }).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$message({
             message: '已解散该团队',
             type: 'success'
@@ -404,7 +411,7 @@ export default {
           user_name: JSON.parse(sessionStorage.getItem('EX_token')).user_name,
           time: this.dateToString(new Date())
         }).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.$message({
             message: '已退出该团队',
             type: 'success'
@@ -418,7 +425,7 @@ export default {
       this.$http.post(this.url + '/group/searchadmin', {
         user_id: JSON.parse(sessionStorage.getItem('EX_token')).user_id
       }).then((res) => {
-        console.log(res)
+        // console.log(res)
         for (let i = 0; i < res.data.length; i++) {
           self.adminlist.push(res.data[i].group_id)
         }
@@ -469,7 +476,7 @@ export default {
             group_name: this.groupinfo.group_name,
             time: this.dateToString(new Date())
           }).then((res) => {
-            console.log(res)
+            // console.log(res)
             this.$message({
               type: 'warning',
               message: res.message

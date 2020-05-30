@@ -410,6 +410,8 @@ router.post('/goout', function (req, res, next) {
         err: err
       })
     } else {
+      // console.log('aaaaa')
+      // console.log(id)
       let i = "select group_leaderId from `group` where group_id = '" + req.body.group_id + "'"
       db.query(i, (err, f) => {
         if (err) {
@@ -417,10 +419,13 @@ router.post('/goout', function (req, res, next) {
             err: err
           })
         } else {
-          if (id === f) {
+          // console.log('bbbbb')
+          // console.log(f)
+          if (id[0].user_id === f[0].group_leaderId) {
             res.json({
               status: 200,
-              message: '没有权限踢出该成员'
+              message: '您不能踢出自己，请解散群组',
+              index: 0
             })
           } else {
             let sql = "select group_menberId from `group` where group_id = '" + req.body.group_id + "'"
@@ -535,7 +540,8 @@ router.post('/goout', function (req, res, next) {
                                           } else {
                                             res.json({
                                               status: 200,
-                                              message: '已踢出该团队'
+                                              message: '已踢出该团队',
+                                              index: 1
                                             })
                                           }
                                         })
